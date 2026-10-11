@@ -106,6 +106,10 @@ DE_LINES = [
     "Window Maker (Minimal)",
     "XMonad (Tiling)",
     "Sugar (OLPC Education)",
+    "dwm (Tiling)",
+    "Ratpoison (Tiling)",
+    "Blackbox (Minimal WM)",
+    "Pop!_OS (GNOME)",
 ]
 
 PRESET_LINES = [

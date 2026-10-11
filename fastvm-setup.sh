@@ -414,6 +414,53 @@ case "$DE_UPPER" in
             firefox
         cp /startwm-fastvm-os.sh /defaults/startwm.sh
         ;;
+
+    "DWM"|"DWM (TILING)"|"DWM (SUCKLESS)")
+        log_info "Installing dwm (dynamic window manager)..."
+        # dwm is compiled to launch `st` (stterm package) and `dmenu`; install
+        # both so its default keybindings work out of the box.
+        install_packages \
+            dwm \
+            stterm \
+            dmenu \
+            x11-xserver-utils \
+            firefox
+        cp /startwm-dwm.sh /defaults/startwm.sh
+        ;;
+
+    "RATPOISON"|"RATPOISON (TILING)")
+        log_info "Installing ratpoison tiling window manager..."
+        install_packages \
+            ratpoison \
+            xterm \
+            firefox
+        cp /startwm-ratpoison.sh /defaults/startwm.sh
+        ;;
+
+    "BLACKBOX"|"BLACKBOX (MINIMAL)"|"BLACKBOX (VERY LIGHTWEIGHT)")
+        log_info "Installing Blackbox minimal window manager..."
+        install_packages \
+            blackbox \
+            xterm \
+            firefox
+        cp /startwm-blackbox.sh /defaults/startwm.sh
+        ;;
+
+    "POP-OS"|"POP OS"|"POPOS"|"POP!_OS"|"POP OS (GNOME)")
+        log_info "Installing the Pop!_OS (System76) GNOME desktop..."
+        # Pop!_OS is a GNOME Shell distribution; reuse the GNOME stack with the
+        # Pop GTK/icon themes and the pop-os session launcher.
+        install_packages \
+            gnome-shell \
+            gnome-session \
+            gnome-terminal \
+            dbus-x11 \
+            pop-gtk-theme \
+            pop-icon-theme \
+            firefox
+        cp /startwm-pop-os.sh /defaults/startwm.sh
+        ;;
+
     *)
         log_error "Unknown desktop environment: $DE_SELECTION (normalised: $DE_UPPER)"
         log_info "Falling back to XFCE4"
@@ -443,6 +490,8 @@ rm -f /startwm-kde.sh /startwm-i3.sh /startwm-xfce.sh /startwm-gnome.sh \
       /startwm-fvwm.sh \
       /startwm-gnome-flashback.sh /startwm-wmaker.sh \
       /startwm-xmonad.sh /startwm-sugar.sh \
+      /startwm-dwm.sh /startwm-ratpoison.sh /startwm-blackbox.sh \
+      /startwm-pop-os.sh \
       2>/dev/null || true
 
 log_info "Desktop Environment setup complete!"

@@ -7,7 +7,7 @@
 
 ### 🎯 One Command. Full Desktop.
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Jetbrains+Mono&size=20&duration=3000&pause=1000&color=6366F1&center=true&vCenter=true&width=700&height=100&lines=⚡+Stream+a+full+Linux+desktop+in+your+browser;🚀+152+production-ready+image+variants;🎨+23+desktop+environments+to+choose+from;💻+Zero+local+setup%2C+instant+deployment;🔥+30-second+startup%2C+pure+speed)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Jetbrains+Mono&size=20&duration=3000&pause=1000&color=6366F1&center=true&vCenter=true&width=700&height=100&lines=⚡+Stream+a+full+Linux+desktop+in+your+browser;🚀+178+production-ready+image+variants;🎨+27+desktop+environments+to+choose+from;💻+Zero+local+setup%2C+instant+deployment;🔥+30-second+startup%2C+pure+speed)](https://git.io/typing-svg)
 
 <br/>
 
@@ -17,7 +17,7 @@ https://discord.gg/aahtG9n537
 ### ⚡ STATUS
 
 <a href="https://github.com/CloudCompile/fastvm/actions"><img src="https://img.shields.io/github/actions/workflow/status/CloudCompile/fastvm/build-images.yml?branch=main&style=for-the-badge&logo=github-actions&logoColor=white&label=CI%20BUILDS&color=6366f1&labelColor=1e1b4b" alt="CI Status"></a>
-<a href="https://github.com/CloudCompile/fastvm"><img src="https://img.shields.io/badge/📦%20IMAGES-152%20VARIANTS-a855f7?style=for-the-badge&labelColor=0a0e27" alt="Docker Images"></a>
+<a href="https://github.com/CloudCompile/fastvm"><img src="https://img.shields.io/badge/📦%20IMAGES-178%20VARIANTS-a855f7?style=for-the-badge&labelColor=0a0e27" alt="Docker Images"></a>
 <a href="https://github.com/CloudCompile/fastvm/stargazers"><img src="https://img.shields.io/github/stars/cloudcompile/fastvm?style=for-the-badge&logo=starship&logoColor=white&color=ffd60a&labelColor=0a0e27" alt="GitHub Stars"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-ff006e?style=for-the-badge&labelColor=0a0e27" alt="License"></a>
 
@@ -38,7 +38,7 @@ https://discord.gg/aahtG9n537
 
   ```text
   ✅ Successful Builds:     2+
-  📦 Published Image Variants: 152
+  📦 Published Image Variants: 178
   📝 Total Commits:         129
   🕐 Last Updated:          2026-10-11 01:02:45 UTC
   ```
@@ -292,6 +292,44 @@ To build it locally using the flavor layer directly:
 FASTVM_DE=Unity FASTVM_OS_FLAVOR=ubuntu-unity ./fastvm-install.sh
 ```
 
+## 🟠 Pop!_OS distro flavor
+
+FastVM also publishes an additive `pop-os-latest` image. It is the Pop!_OS
+(System76) 22.04 GNOME Shell experience layered on the same Ubuntu/KasmVNC base
+with the Pop GTK/icon themes. Like the other flavors it only adds a distro
+identity layer (`/etc/pop-os/release`, `/usr/local/bin/pop-os-info`) and does
+**not** replace or repoint the existing Ubuntu base or any desktop/preset tag.
+
+```bash
+docker run -d -p 3000:3000 -p 3001:8099 \
+  ghcr.io/cloudcompile/fastvm:pop-os-latest
+```
+
+To build it locally using the flavor layer directly:
+
+```bash
+FASTVM_DE=pop-os FASTVM_OS_FLAVOR=pop-os ./fastvm-install.sh
+```
+
+## 🟩 Linux Mint distro flavor
+
+FastVM also publishes an additive `linuxmint-latest` image. It is the Linux Mint
+21 (Cinnamon) experience layered on the same Ubuntu/KasmVNC base. Like the other
+flavors it only adds a distro identity layer (`/etc/linuxmint/release`,
+`/usr/local/bin/linuxmint-info`) and does **not** replace or repoint the existing
+Ubuntu base or any desktop/preset tag.
+
+```bash
+docker run -d -p 3000:3000 -p 3001:8099 \
+  ghcr.io/cloudcompile/fastvm:linuxmint-latest
+```
+
+To build it locally using the flavor layer directly:
+
+```bash
+FASTVM_DE=Cinnamon FASTVM_OS_FLAVOR=linuxmint ./fastvm-install.sh
+```
+
 ### Recovery and updates
 
 The dashboard **System** view creates authenticated `recovery` and `update`
@@ -312,8 +350,8 @@ persistence, hardware, and update tests are complete.
 
 | 🏃 SPEED | 🎨 CHOICE | ☁️ CLOUD | 💾 DATA |
 |:---:|:---:|:---:|:---:|
-| **30-sec startup** | **23 desktops** | **Deploy anywhere** | **Auto-backup** |
-| 152 prebuilt images | XFCE4 → Window Maker | Codespaces ready | Point-in-time restore |
+| **30-sec startup** | **27 desktops** | **Deploy anywhere** | **Auto-backup** |
+| 178 prebuilt images | XFCE4 → Pop!_OS | Codespaces ready | Point-in-time restore |
 | Parallel CI/CD | Pick your vibe | Infinite scaling | Persistent storage |
 | Layer caching | Lightweight+full | Zero local setup | Snapshot manager |
 
@@ -399,6 +437,10 @@ docker run -d -p 3000:3000 --device /dev/dri ghcr.io/cloudcompile/fastvm:kde-gam
 | 🏛️ **FVWM** | 160 MB | ⚡⚡⚡⚡ | Classic WM | F? Virtual Window Manager — scriptable virtual-desktop WM, fixed since 1993 |
 | ⌨️ **XMonad** | 128 MB | ⚡⚡⚡⚡⚡ | Tiling (Haskell) | xmonad + xmobar, compiled-in default config, keyboard-driven, ultra-light |
 | 🍬 **Sugar** | 384 MB | ⚡⚡⚡⚡ | Activity shell | Sugar Learning Platform (OLPC) education desktop for kids |
+| 🪟 **dwm** | 96 MB | ⚡⚡⚡⚡⚡ | Tiling (suckless) | Dynamic window manager — st + dmenu, tiny C codebase, ultra-light |
+| ⌨️ **Ratpoison** | 96 MB | ⚡⚡⚡⚡⚡ | Tiling (keyboard) | Screen-style keyboard WM, no mouse required, ultra-light |
+| ⬛ **Blackbox** | 96 MB | ⚡⚡⚡⚡⚡ | Stacking WM | Minimal WM with a right-click root menu, ultra-light |
+| 🟠 **Pop!_OS** | 2 GB | ⚡⚡ | GNOME (System76) | Pop!_OS 22.04 GNOME Shell + Pop GTK/icon themes, pairs with the pop-os flavor |
 
 ---
 
@@ -636,7 +678,7 @@ Persistent Data (/config)
 
 ### **What's Included**
 - 🐳 **Multi-stage Dockerfile** — optimized layers, ~2GB compressed
-- 🎨 **Desktop Environment** — 23 choices, pre-configured
+- 🎨 **Desktop Environment** — 27 choices, pre-configured
 - 📦 **14 App Installers** — Wine, Chrome, Steam, VSCodium, etc.
 - 📊 **Node.js Dashboard** — monitoring, recording, backups
 - 🔧 **Runtime Scripts** — audio, clipboard, recording, autoscaling

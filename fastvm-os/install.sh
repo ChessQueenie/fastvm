@@ -324,6 +324,77 @@ EOF
     exit 0
 fi
 
+# ---------------------------------------------------------------------------
+# Additive base-distribution flavor: Pop!_OS.
+# Pop!_OS is System76's Ubuntu-based distribution built on GNOME Shell. Its
+# desktop is installed by fastvm-setup.sh (FASTVM_DE=pop-os) using the Ubuntu
+# archive's GNOME stack plus the Pop GTK/icon themes; this layer only writes
+# distro identity files and never replaces or repoints the Ubuntu base image.
+# ---------------------------------------------------------------------------
+if [[ "$flavor" == "pop-os" || "$flavor" == "pop_os" || "$flavor" == "popos" ]]; then
+    install -d -m 0755 /etc/pop-os /etc/issue.d /usr/local/bin /etc/profile.d
+    cat > /etc/pop-os/release <<'EOF'
+NAME="Pop!_OS"
+ID=pop
+ID_LIKE="ubuntu debian"
+PRETTY_NAME="Pop!_OS 22.04 LTS (FastVM flavor)"
+VARIANT="GNOME Shell desktop, System76 Ubuntu-based distribution"
+EOF
+
+    cat > /etc/profile.d/pop-os.sh <<'EOF'
+# Pop!_OS identity; configuration remains controlled by FASTVM_* variables.
+export FASTVM_DISTRO_FLAVOR="pop-os"
+EOF
+
+    cat > /usr/local/bin/pop-os-info <<'EOF'
+#!/bin/sh
+set -eu
+cat /etc/pop-os/release
+printf 'Desktop: %s\nPreset: %s\n' "${FASTVM_DE:-pop-os}" "${FASTVM_PRESET:-none}"
+EOF
+    chmod 0755 /usr/local/bin/pop-os-info
+
+    printf 'Pop!_OS 22.04 LTS (FastVM flavor)\n' > /etc/issue.d/pop-os.issue
+    echo "Installed Pop!_OS distro identity layer"
+    exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Additive base-distribution flavor: Linux Mint.
+# Linux Mint is an Ubuntu-based distribution whose flagship edition uses the
+# Cinnamon desktop. The desktop is installed by fastvm-setup.sh
+# (FASTVM_DE=cinnamon); the Mint-specific themes/icons are not packaged in the
+# Ubuntu archive, so this layer writes distro identity files and reuses the
+# available Cinnamon theming. It never replaces or repoints the Ubuntu base.
+# ---------------------------------------------------------------------------
+if [[ "$flavor" == "linuxmint" || "$flavor" == "linux-mint" || "$flavor" == "mint" ]]; then
+    install -d -m 0755 /etc/linuxmint /etc/issue.d /usr/local/bin /etc/profile.d
+    cat > /etc/linuxmint/release <<'EOF'
+NAME="Linux Mint"
+ID=linuxmint
+ID_LIKE="ubuntu debian"
+PRETTY_NAME="Linux Mint 21 (FastVM flavor)"
+VARIANT="Cinnamon desktop, Ubuntu-based distribution"
+EOF
+
+    cat > /etc/profile.d/linuxmint.sh <<'EOF'
+# Linux Mint identity; configuration remains controlled by FASTVM_* variables.
+export FASTVM_DISTRO_FLAVOR="linuxmint"
+EOF
+
+    cat > /usr/local/bin/linuxmint-info <<'EOF'
+#!/bin/sh
+set -eu
+cat /etc/linuxmint/release
+printf 'Desktop: %s\nPreset: %s\n' "${FASTVM_DE:-Cinnamon}" "${FASTVM_PRESET:-none}"
+EOF
+    chmod 0755 /usr/local/bin/linuxmint-info
+
+    printf 'Linux Mint 21 (FastVM flavor)\n' > /etc/issue.d/linuxmint.issue
+    echo "Installed Linux Mint distro identity layer"
+    exit 0
+fi
+
 if [[ "$flavor" != "fastvm-os" ]]; then
     echo "Unsupported FastVM OS flavor: $flavor" >&2
     exit 1

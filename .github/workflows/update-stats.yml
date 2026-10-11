@@ -37,10 +37,10 @@ jobs:
             --json conclusion --jq 'length')
 
           # Real metric: image variants defined by the workflow matrices.
-          # 23 desktops x 6 presets = 138 + 4 single-app builds
-          # + 10 distro flavors (fastvm-os, Studio, Kylin, Budgie, Edubuntu,
-          # Xubuntu, Lubuntu, Kubuntu, MATE, Unity) = 152.
-          PUBLISHED_IMAGE_VARIANTS=152
+          # 27 desktops x 6 presets = 162 + 4 single-app builds
+          # + 12 distro flavors (fastvm-os, Studio, Kylin, Budgie, Edubuntu,
+          # Xubuntu, Lubuntu, Kubuntu, MATE, Unity, Pop!_OS, Mint) = 178.
+          PUBLISHED_IMAGE_VARIANTS=178
 
           # Real metric: total Git commits in the default branch.
           TOTAL_COMMITS=$(git rev-list --count HEAD)
