@@ -7,7 +7,7 @@
 
 ### 🎯 One Command. Full Desktop.
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Jetbrains+Mono&size=20&duration=3000&pause=1000&color=6366F1&center=true&vCenter=true&width=700&height=100&lines=⚡+Stream+a+full+Linux+desktop+in+your+browser;🚀+137+production-ready+image+variants;🎨+21+desktop+environments+to+choose+from;💻+Zero+local+setup%2C+instant+deployment;🔥+30-second+startup%2C+pure+speed)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Jetbrains+Mono&size=20&duration=3000&pause=1000&color=6366F1&center=true&vCenter=true&width=700&height=100&lines=⚡+Stream+a+full+Linux+desktop+in+your+browser;🚀+152+production-ready+image+variants;🎨+23+desktop+environments+to+choose+from;💻+Zero+local+setup%2C+instant+deployment;🔥+30-second+startup%2C+pure+speed)](https://git.io/typing-svg)
 
 <br/>
 
@@ -17,7 +17,7 @@ https://discord.gg/aahtG9n537
 ### ⚡ STATUS
 
 <a href="https://github.com/CloudCompile/fastvm/actions"><img src="https://img.shields.io/github/actions/workflow/status/CloudCompile/fastvm/build-images.yml?branch=main&style=for-the-badge&logo=github-actions&logoColor=white&label=CI%20BUILDS&color=6366f1&labelColor=1e1b4b" alt="CI Status"></a>
-<a href="https://github.com/CloudCompile/fastvm"><img src="https://img.shields.io/badge/📦%20IMAGES-137%20VARIANTS-a855f7?style=for-the-badge&labelColor=0a0e27" alt="Docker Images"></a>
+<a href="https://github.com/CloudCompile/fastvm"><img src="https://img.shields.io/badge/📦%20IMAGES-152%20VARIANTS-a855f7?style=for-the-badge&labelColor=0a0e27" alt="Docker Images"></a>
 <a href="https://github.com/CloudCompile/fastvm/stargazers"><img src="https://img.shields.io/github/stars/cloudcompile/fastvm?style=for-the-badge&logo=starship&logoColor=white&color=ffd60a&labelColor=0a0e27" alt="GitHub Stars"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-ff006e?style=for-the-badge&labelColor=0a0e27" alt="License"></a>
 
@@ -38,7 +38,7 @@ https://discord.gg/aahtG9n537
 
   ```text
   ✅ Successful Builds:     2+
-  📦 Published Image Variants: 137
+  📦 Published Image Variants: 152
   📝 Total Commits:         125
   🕐 Last Updated:          2026-10-11 00:01:52 UTC
   ```
@@ -235,6 +235,63 @@ To build it locally using the flavor layer directly:
 FASTVM_DE=LXQT FASTVM_OS_FLAVOR=lubuntu ./fastvm-install.sh
 ```
 
+## ⚙️ Kubuntu distro flavor
+
+FastVM also publishes an additive `kubuntu-latest` image. It is the official
+Kubuntu 22.04 LTS flavor (KDE Plasma desktop) layered on the same Ubuntu/KasmVNC
+base. Like the other flavors it only adds a distro identity layer
+(`/etc/kubuntu/release`, `/usr/local/bin/kubuntu-info`) and does **not** replace
+or repoint the existing Ubuntu base or any desktop/preset tag.
+
+```bash
+docker run -d -p 3000:3000 -p 3001:8099 \
+  ghcr.io/cloudcompile/fastvm:kubuntu-latest
+```
+
+To build it locally using the flavor layer directly:
+
+```bash
+FASTVM_DE=KDE FASTVM_OS_FLAVOR=kubuntu ./fastvm-install.sh
+```
+
+## 🟢 Ubuntu MATE distro flavor
+
+FastVM also publishes an additive `ubuntu-mate-latest` image. It is the official
+Ubuntu MATE 22.04 LTS flavor (MATE desktop) layered on the same Ubuntu/KasmVNC
+base. Like the other flavors it only adds a distro identity layer
+(`/etc/ubuntu-mate/release`, `/usr/local/bin/ubuntu-mate-info`) and does **not**
+replace or repoint the existing Ubuntu base or any desktop/preset tag.
+
+```bash
+docker run -d -p 3000:3000 -p 3001:8099 \
+  ghcr.io/cloudcompile/fastvm:ubuntu-mate-latest
+```
+
+To build it locally using the flavor layer directly:
+
+```bash
+FASTVM_DE=MATE FASTVM_OS_FLAVOR=ubuntu-mate ./fastvm-install.sh
+```
+
+## 🟣 Ubuntu Unity distro flavor
+
+FastVM also publishes an additive `ubuntu-unity-latest` image. It is the official
+Ubuntu Unity 22.04 LTS flavor (Unity desktop) layered on the same Ubuntu/KasmVNC
+base. Like the other flavors it only adds a distro identity layer
+(`/etc/ubuntu-unity/release`, `/usr/local/bin/ubuntu-unity-info`) and does
+**not** replace or repoint the existing Ubuntu base or any desktop/preset tag.
+
+```bash
+docker run -d -p 3000:3000 -p 3001:8099 \
+  ghcr.io/cloudcompile/fastvm:ubuntu-unity-latest
+```
+
+To build it locally using the flavor layer directly:
+
+```bash
+FASTVM_DE=Unity FASTVM_OS_FLAVOR=ubuntu-unity ./fastvm-install.sh
+```
+
 ### Recovery and updates
 
 The dashboard **System** view creates authenticated `recovery` and `update`
@@ -255,8 +312,8 @@ persistence, hardware, and update tests are complete.
 
 | 🏃 SPEED | 🎨 CHOICE | ☁️ CLOUD | 💾 DATA |
 |:---:|:---:|:---:|:---:|
-| **30-sec startup** | **21 desktops** | **Deploy anywhere** | **Auto-backup** |
-| 137 prebuilt images | XFCE4 → Window Maker | Codespaces ready | Point-in-time restore |
+| **30-sec startup** | **23 desktops** | **Deploy anywhere** | **Auto-backup** |
+| 152 prebuilt images | XFCE4 → Window Maker | Codespaces ready | Point-in-time restore |
 | Parallel CI/CD | Pick your vibe | Infinite scaling | Persistent storage |
 | Layer caching | Lightweight+full | Zero local setup | Snapshot manager |
 
@@ -340,6 +397,8 @@ docker run -d -p 3000:3000 --device /dev/dri ghcr.io/cloudcompile/fastvm:kde-gam
 | 🌿 **herbstluftwm** | 128 MB | ⚡⚡⚡⚡⚡ | Tiling (manual) | Manual tiling WM driven by hotkeys, dmenu launcher, ultra-light |
 | 🧰 **JWM** | 128 MB | ⚡⚡⚡⚡⚡ | Stacking WM | Joe's Window Manager — XML-configured taskbar/pager, ultra-light |
 | 🏛️ **FVWM** | 160 MB | ⚡⚡⚡⚡ | Classic WM | F? Virtual Window Manager — scriptable virtual-desktop WM, fixed since 1993 |
+| ⌨️ **XMonad** | 128 MB | ⚡⚡⚡⚡⚡ | Tiling (Haskell) | xmonad + xmobar, compiled-in default config, keyboard-driven, ultra-light |
+| 🍬 **Sugar** | 384 MB | ⚡⚡⚡⚡ | Activity shell | Sugar Learning Platform (OLPC) education desktop for kids |
 
 ---
 
@@ -577,7 +636,7 @@ Persistent Data (/config)
 
 ### **What's Included**
 - 🐳 **Multi-stage Dockerfile** — optimized layers, ~2GB compressed
-- 🎨 **Desktop Environment** — 18 choices, pre-configured
+- 🎨 **Desktop Environment** — 23 choices, pre-configured
 - 📦 **14 App Installers** — Wine, Chrome, Steam, VSCodium, etc.
 - 📊 **Node.js Dashboard** — monitoring, recording, backups
 - 🔧 **Runtime Scripts** — audio, clipboard, recording, autoscaling

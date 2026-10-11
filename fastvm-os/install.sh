@@ -219,6 +219,111 @@ EOF
     exit 0
 fi
 
+# ---------------------------------------------------------------------------
+# Additive base-distribution flavor: Kubuntu.
+# Kubuntu is an official Ubuntu 22.04 flavor built on the KDE Plasma desktop.
+# The desktop packages are installed by fastvm-setup.sh (FASTVM_DE=KDE); this
+# layer only writes distro identity files and never replaces or repoints the
+# Ubuntu base image.
+# ---------------------------------------------------------------------------
+if [[ "$flavor" == "kubuntu" || "$flavor" == "ubuntu-kde" ]]; then
+    install -d -m 0755 /etc/kubuntu /etc/issue.d /usr/local/bin /etc/profile.d
+    cat > /etc/kubuntu/release <<'EOF'
+NAME="Kubuntu"
+ID=kubuntu
+ID_LIKE=ubuntu
+PRETTY_NAME="Kubuntu 22.04 LTS (FastVM flavor)"
+VARIANT="KDE Plasma desktop, official Ubuntu flavor"
+EOF
+
+    cat > /etc/profile.d/kubuntu.sh <<'EOF'
+# Kubuntu identity; configuration remains controlled by FASTVM_* variables.
+export FASTVM_DISTRO_FLAVOR="kubuntu"
+EOF
+
+    cat > /usr/local/bin/kubuntu-info <<'EOF'
+#!/bin/sh
+set -eu
+cat /etc/kubuntu/release
+printf 'Desktop: %s\nPreset: %s\n' "${FASTVM_DE:-KDE}" "${FASTVM_PRESET:-none}"
+EOF
+    chmod 0755 /usr/local/bin/kubuntu-info
+
+    printf 'Kubuntu 22.04 LTS (FastVM flavor)\n' > /etc/issue.d/kubuntu.issue
+    echo "Installed Kubuntu distro identity layer"
+    exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Additive base-distribution flavor: Ubuntu MATE.
+# Ubuntu MATE is an official Ubuntu 22.04 flavor built on the MATE desktop. The
+# desktop packages are installed by fastvm-setup.sh (FASTVM_DE=MATE); this layer
+# only writes distro identity files and never replaces or repoints the Ubuntu
+# base image.
+# ---------------------------------------------------------------------------
+if [[ "$flavor" == "ubuntu-mate" ]]; then
+    install -d -m 0755 /etc/ubuntu-mate /etc/issue.d /usr/local/bin /etc/profile.d
+    cat > /etc/ubuntu-mate/release <<'EOF'
+NAME="Ubuntu MATE"
+ID=ubuntu-mate
+ID_LIKE=ubuntu
+PRETTY_NAME="Ubuntu MATE 22.04 LTS (FastVM flavor)"
+VARIANT="MATE desktop, traditional Ubuntu flavor"
+EOF
+
+    cat > /etc/profile.d/ubuntu-mate.sh <<'EOF'
+# Ubuntu MATE identity; configuration remains controlled by FASTVM_* variables.
+export FASTVM_DISTRO_FLAVOR="ubuntu-mate"
+EOF
+
+    cat > /usr/local/bin/ubuntu-mate-info <<'EOF'
+#!/bin/sh
+set -eu
+cat /etc/ubuntu-mate/release
+printf 'Desktop: %s\nPreset: %s\n' "${FASTVM_DE:-MATE}" "${FASTVM_PRESET:-none}"
+EOF
+    chmod 0755 /usr/local/bin/ubuntu-mate-info
+
+    printf 'Ubuntu MATE 22.04 LTS (FastVM flavor)\n' > /etc/issue.d/ubuntu-mate.issue
+    echo "Installed Ubuntu MATE distro identity layer"
+    exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Additive base-distribution flavor: Ubuntu Unity.
+# Ubuntu Unity is an official Ubuntu 22.04 flavor built on the Unity desktop.
+# The desktop packages are installed by fastvm-setup.sh (FASTVM_DE=Unity); this
+# layer only writes distro identity files and never replaces or repoints the
+# Ubuntu base image.
+# ---------------------------------------------------------------------------
+if [[ "$flavor" == "ubuntu-unity" ]]; then
+    install -d -m 0755 /etc/ubuntu-unity /etc/issue.d /usr/local/bin /etc/profile.d
+    cat > /etc/ubuntu-unity/release <<'EOF'
+NAME="Ubuntu Unity"
+ID=ubuntu-unity
+ID_LIKE=ubuntu
+PRETTY_NAME="Ubuntu Unity 22.04 LTS (FastVM flavor)"
+VARIANT="Unity desktop, official Ubuntu flavor"
+EOF
+
+    cat > /etc/profile.d/ubuntu-unity.sh <<'EOF'
+# Ubuntu Unity identity; configuration remains controlled by FASTVM_* variables.
+export FASTVM_DISTRO_FLAVOR="ubuntu-unity"
+EOF
+
+    cat > /usr/local/bin/ubuntu-unity-info <<'EOF'
+#!/bin/sh
+set -eu
+cat /etc/ubuntu-unity/release
+printf 'Desktop: %s\nPreset: %s\n' "${FASTVM_DE:-Unity}" "${FASTVM_PRESET:-none}"
+EOF
+    chmod 0755 /usr/local/bin/ubuntu-unity-info
+
+    printf 'Ubuntu Unity 22.04 LTS (FastVM flavor)\n' > /etc/issue.d/ubuntu-unity.issue
+    echo "Installed Ubuntu Unity distro identity layer"
+    exit 0
+fi
+
 if [[ "$flavor" != "fastvm-os" ]]; then
     echo "Unsupported FastVM OS flavor: $flavor" >&2
     exit 1

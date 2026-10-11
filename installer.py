@@ -104,6 +104,8 @@ DE_LINES = [
     "BSPWM (Tiling)",
     "GNOME Flashback (Classic)",
     "Window Maker (Minimal)",
+    "XMonad (Tiling)",
+    "Sugar (OLPC Education)",
 ]
 
 PRESET_LINES = [

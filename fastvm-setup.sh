@@ -322,6 +322,37 @@ case "$DE_UPPER" in
         cp /startwm-fvwm.sh /defaults/startwm.sh
         ;;
 
+    "XMONAD"|"XMONAD (TILING)"|"XMONAD (HASKELL TILING)")
+        log_info "Installing XMonad tiling window manager..."
+        install_packages \
+            xmonad \
+            xmobar \
+            suckless-tools \
+            xterm \
+            firefox
+        # Register xmonad with the x-window-manager alternative so bare X
+        # sessions (e.g. startx without a WM argument) resolve it correctly.
+        if command -v update-alternatives >/dev/null 2>&1; then
+            update-alternatives --install /usr/bin/x-window-manager \
+                x-window-manager /usr/bin/xmonad 60 >/dev/null 2>&1 || true
+        fi
+        # XMonad has no session manager; the launcher starts it with its
+        # compiled-in default configuration and runs xmobar standalone.
+        cp /startwm-xmonad.sh /defaults/startwm.sh
+        ;;
+
+    "SUGAR"|"SUGAR DESKTOP"|"SUGAR (OLPC)"|"SUGAR (EDUCATION)")
+        log_info "Installing the Sugar desktop environment..."
+        # `sugar` is only a virtual package in jammy; sugar-session is the
+        # real package and already Provides: sugar and x-session-manager.
+        install_packages \
+            sugar-session \
+            dbus-x11 \
+            firefox
+        # Sugar is an X session that expects a session bus.
+        cp /startwm-sugar.sh /defaults/startwm.sh
+        ;;
+
     "GNOME-FLASHBACK"|"GNOME FLASHBACK"|"FLASHBACK"|"GNOME FLASHBACK (CLASSIC)")
         log_info "Installing GNOME Flashback (classic panel) desktop..."
         install_packages \
@@ -411,6 +442,7 @@ rm -f /startwm-kde.sh /startwm-i3.sh /startwm-xfce.sh /startwm-gnome.sh \
       /startwm-bspwm.sh /startwm-herbstluftwm.sh /startwm-jwm.sh \
       /startwm-fvwm.sh \
       /startwm-gnome-flashback.sh /startwm-wmaker.sh \
+      /startwm-xmonad.sh /startwm-sugar.sh \
       2>/dev/null || true
 
 log_info "Desktop Environment setup complete!"
