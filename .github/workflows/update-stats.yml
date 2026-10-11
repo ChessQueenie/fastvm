@@ -37,10 +37,11 @@ jobs:
             --json conclusion --jq 'length')
 
           # Real metric: image variants defined by the workflow matrices.
-          # 27 desktops x 6 presets = 162 + 4 single-app builds
-          # + 12 distro flavors (fastvm-os, Studio, Kylin, Budgie, Edubuntu,
-          # Xubuntu, Lubuntu, Kubuntu, MATE, Unity, Pop!_OS, Mint) = 178.
-          PUBLISHED_IMAGE_VARIANTS=178
+          # 30 desktops x 6 presets = 180 + 4 single-app builds
+          # + 14 distro flavors (fastvm-os, Studio, Kylin, Budgie, Edubuntu,
+          # Xubuntu, Lubuntu, Kubuntu, MATE, Unity, Pop!_OS, Mint, Kali,
+          # Parrot) = 198.
+          PUBLISHED_IMAGE_VARIANTS=198
 
           # Real metric: total Git commits in the default branch.
           TOTAL_COMMITS=$(git rev-list --count HEAD)
@@ -77,7 +78,11 @@ jobs:
               content = f.read()
 
           start = content.index("## 📊 **Real-Time Stats**")
-          end = content.index("**These are real metrics**") + len("**These are real metrics**")
+          marker = "**These are real metrics**"
+          marker_pos = content.index(marker, start)
+          # End at the newline after the metrics line so re-runs replace the
+          # whole block instead of appending the trailing text again.
+          end = content.index("\n", marker_pos)
           new_content = content[:start] + new_block + content[end:]
 
           if new_content == content:

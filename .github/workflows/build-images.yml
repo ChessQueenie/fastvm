@@ -45,6 +45,9 @@ jobs:
           - ratpoison
           - blackbox
           - pop-os
+          - pekwm
+          - spectrwm
+          - sawfish
         preset:
           - none
           - minimal
@@ -639,9 +642,83 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-linuxmint
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-linuxmint,mode=max
 
+  build-kali:
+    name: Build Kali Linux distro flavor
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Set lowercase image name
+        id: image
+        run: echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Kali Linux
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.optimized
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:kali-latest
+            ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:kali-${{ github.sha }}
+          build-args: |
+            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+            VERSION=${{ github.ref_name }}
+            FASTVM_DE=xfce4
+            FASTVM_PRESET=development
+            FASTVM_OS_FLAVOR=kali
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-kali
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-kali,mode=max
+
+  build-parrot:
+    name: Build Parrot Security OS distro flavor
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Set lowercase image name
+        id: image
+        run: echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Parrot Security OS
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.optimized
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:parrot-latest
+            ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:parrot-${{ github.sha }}
+          build-args: |
+            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+            VERSION=${{ github.ref_name }}
+            FASTVM_DE=mate
+            FASTVM_PRESET=development
+            FASTVM_OS_FLAVOR=parrot
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-parrot
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-parrot,mode=max
+
   build-summary:
     runs-on: ubuntu-latest
-    needs: [build, build-specials, build-fastvm-os, build-ubuntu-studio, build-ubuntu-kylin, build-ubuntu-budgie, build-ubuntu-edubuntu, build-ubuntu-xfce, build-ubuntu-lubuntu, build-kubuntu, build-ubuntu-mate, build-ubuntu-unity, build-pop-os, build-linuxmint]
+    needs: [build, build-specials, build-fastvm-os, build-ubuntu-studio, build-ubuntu-kylin, build-ubuntu-budgie, build-ubuntu-edubuntu, build-ubuntu-xfce, build-ubuntu-lubuntu, build-kubuntu, build-ubuntu-mate, build-ubuntu-unity, build-pop-os, build-linuxmint, build-kali, build-parrot]
     if: always()
     steps:
       - name: Set lowercase image name
@@ -657,14 +734,14 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Format:** \`$IMAGE:<desktop>-<preset>-latest\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| 🏃 XFCE4 | 👑 KDE | 🍒 GNOME | 🎨 Cinnamon | 🪶 LXQT | ⌨️ i3 | 🎯 Budgie | 🟢 MATE | 🪶 LXDE | 🟦 Fluxbox | 🟣 Unity | ⚡ Enlightenment | ❄️ IceWM | 🔲 awesome | 🇨🇳 UKUI | 🧩 bspwm | 🖥️ GNOME Flashback | 🪟 Window Maker | 🌿 herbstluftwm | 🧰 JWM | 🏛️ FVWM | ⌨️ XMonad | 🍬 Sugar | 🔧 dwm | 🐭 Ratpoison | ⬛ Blackbox | 🧬 Pop!_OS |" >> $GITHUB_STEP_SUMMARY
-          echo "|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|" >> $GITHUB_STEP_SUMMARY
-          echo "| **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** |" >> $GITHUB_STEP_SUMMARY
-          echo "| **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** |" >> $GITHUB_STEP_SUMMARY
-          echo "| **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 |" >> $GITHUB_STEP_SUMMARY
-          echo "| **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 |" >> $GITHUB_STEP_SUMMARY
-          echo "| **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 |" >> $GITHUB_STEP_SUMMARY
-          echo "| **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🏃 XFCE4 | 👑 KDE | 🍒 GNOME | 🎨 Cinnamon | 🪶 LXQT | ⌨️ i3 | 🎯 Budgie | 🟢 MATE | 🪶 LXDE | 🟦 Fluxbox | 🟣 Unity | ⚡ Enlightenment | ❄️ IceWM | 🔲 awesome | 🇨🇳 UKUI | 🧩 bspwm | 🖥️ GNOME Flashback | 🪟 Window Maker | 🌿 herbstluftwm | 🧰 JWM | 🏛️ FVWM | ⌨️ XMonad | 🍬 Sugar | 🔧 dwm | 🐭 Ratpoison | ⬛ Blackbox | 🧬 Pop!_OS | 🧊 PekWM | ⌨ spectrwm | 🐟 Sawfish |" >> $GITHUB_STEP_SUMMARY
+          echo "|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** | **-none** |" >> $GITHUB_STEP_SUMMARY
+          echo "| **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** | **-minimal** |" >> $GITHUB_STEP_SUMMARY
+          echo "| **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 | **-gaming** 🎮 |" >> $GITHUB_STEP_SUMMARY
+          echo "| **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 | **-development** 💻 |" >> $GITHUB_STEP_SUMMARY
+          echo "| **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 | **-office** 📊 |" >> $GITHUB_STEP_SUMMARY
+          echo "| **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 | **-content-creation** 🎬 |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### ⚡ 4 Single-App Variants (Ultra-Minimal)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -728,3 +805,9 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🌿 Linux Mint distro flavor" >> $GITHUB_STEP_SUMMARY
           echo "The additive \\`linuxmint-latest\\` image is Linux Mint (Cinnamon) + development with the Mint identity layer." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🐉 Kali Linux distro flavor" >> $GITHUB_STEP_SUMMARY
+          echo "The additive \\`kali-latest\\` image is XFCE4 + development with the Kali Linux security-focused identity layer." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🦜 Parrot Security OS distro flavor" >> $GITHUB_STEP_SUMMARY
+          echo "The additive \\`parrot-latest\\` image is MATE + development with the Parrot Security OS identity layer." >> $GITHUB_STEP_SUMMARY

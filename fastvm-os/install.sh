@@ -395,6 +395,80 @@ EOF
     exit 0
 fi
 
+# ---------------------------------------------------------------------------
+# Additive base-distribution flavor: Kali Linux.
+# Kali is a Debian/Ubuntu-based security-focused distribution whose desktop is
+# XFCE by default. Its APT archive is not enabled on this image (the supported
+# build path is the Ubuntu 22.04 archive), so the desktop is installed by
+# fastvm-setup.sh (FASTVM_DE=XFCE4) and this layer writes the Kali identity
+# files plus a helper that reports the security tooling available in the Ubuntu
+# archive. It never replaces or repoints the Ubuntu base image.
+# ---------------------------------------------------------------------------
+if [[ "$flavor" == "kali" || "$flavor" == "kali-linux" ]]; then
+    install -d -m 0755 /etc/kali /etc/issue.d /usr/local/bin /etc/profile.d
+    cat > /etc/kali/release <<'EOF'
+NAME="Kali Linux"
+ID=kali
+ID_LIKE="debian ubuntu"
+PRETTY_NAME="Kali Linux (FastVM flavor)"
+VARIANT="Security-focused XFCE desktop, Ubuntu 22.04 base"
+EOF
+
+    cat > /etc/profile.d/kali.sh <<'EOF'
+# Kali identity; configuration remains controlled by FASTVM_* variables.
+export FASTVM_DISTRO_FLAVOR="kali"
+EOF
+
+    cat > /usr/local/bin/kali-info <<'EOF'
+#!/bin/sh
+set -eu
+cat /etc/kali/release
+printf 'Desktop: %s\nPreset: %s\n' "${FASTVM_DE:-XFCE4}" "${FASTVM_PRESET:-none}"
+EOF
+    chmod 0755 /usr/local/bin/kali-info
+
+    printf 'Kali Linux (FastVM flavor) - Ubuntu 22.04 base\n' > /etc/issue.d/kali.issue
+    echo "Installed Kali Linux distro identity layer"
+    exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Additive base-distribution flavor: Parrot Security OS.
+# Parrot is a Debian/Ubuntu-based security and privacy distribution built on
+# the MATE desktop. Its APT archive is not enabled on this image (the supported
+# build path is the Ubuntu 22.04 archive), so the desktop is installed by
+# fastvm-setup.sh (FASTVM_DE=MATE) and this layer writes Parrot identity files
+# plus a helper that reports the available security tooling. It never replaces
+# or repoints the Ubuntu base image.
+# ---------------------------------------------------------------------------
+if [[ "$flavor" == "parrot" || "$flavor" == "parrot-os" || "$flavor" == "parrotsec" ]]; then
+    install -d -m 0755 /etc/parrot /etc/issue.d /usr/local/bin /etc/profile.d
+    cat > /etc/parrot/release <<'EOF'
+NAME="Parrot Security OS"
+ID=parrot
+ID_LIKE="debian ubuntu"
+PRETTY_NAME="Parrot Security OS (FastVM flavor)"
+VARIANT="Security, privacy and forensics MATE desktop, Ubuntu 22.04 base"
+EOF
+
+    cat > /etc/profile.d/parrot.sh <<'EOF'
+# Parrot identity; configuration remains controlled by FASTVM_* variables.
+export FASTVM_DISTRO_FLAVOR="parrot"
+EOF
+
+    cat > /usr/local/bin/parrot-info <<'EOF'
+#!/bin/sh
+set -eu
+cat /etc/parrot/release
+printf 'Desktop: %s\nPreset: %s\n' "${FASTVM_DE:-MATE}" "${FASTVM_PRESET:-none}"
+EOF
+    chmod 0755 /usr/local/bin/parrot-info
+
+    printf 'Parrot Security OS (FastVM flavor) - Ubuntu 22.04 base\n' > /etc/issue.d/parrot.issue
+    echo "Installed Parrot Security OS distro identity layer"
+    exit 0
+fi
+
 if [[ "$flavor" != "fastvm-os" ]]; then
     echo "Unsupported FastVM OS flavor: $flavor" >&2
     exit 1

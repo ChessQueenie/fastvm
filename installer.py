@@ -110,6 +110,9 @@ DE_LINES = [
     "Ratpoison (Tiling)",
     "Blackbox (Minimal WM)",
     "Pop!_OS (GNOME)",
+    "PekWM (Lightweight)",
+    "spectrwm (Tiling)",
+    "Sawfish (Scriptable)",
 ]
 
 PRESET_LINES = [

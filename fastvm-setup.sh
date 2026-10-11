@@ -461,6 +461,38 @@ case "$DE_UPPER" in
         cp /startwm-pop-os.sh /defaults/startwm.sh
         ;;
 
+    "PEKWM"|"PEKWM (VERY LIGHTWEIGHT)"|"PEKWM (LIGHTWEIGHT)")
+        log_info "Installing PekWM..."
+        install_packages \
+            pekwm \
+            xterm \
+            firefox
+        # PekWM ships its full default config under /etc/pekwm; the session
+        # launcher seeds it per-user on first run.
+        cp /startwm-pekwm.sh /defaults/startwm.sh
+        ;;
+
+    "SPECTRWM"|"SPECTRWM (TILING)"|"SPECTRWM (DYNAMIC TILING)")
+        log_info "Installing spectrwm tiling window manager..."
+        install_packages \
+            spectrwm \
+            xterm \
+            firefox
+        # spectrwm reads /etc/spectrwm.conf; the launcher installs a per-user copy.
+        cp /startwm-spectrwm.sh /defaults/startwm.sh
+        ;;
+
+    "SAWFISH"|"SAWFISH (SCRIPTABLE)"|"SAWFISH (LISP)")
+        log_info "Installing Sawfish..."
+        install_packages \
+            sawfish \
+            xterm \
+            firefox
+        # Sawfish is a Lisp-scriptable reparenting window manager; its packaged
+        # site-init provides the default theme, bindings, and menu.
+        cp /startwm-sawfish.sh /defaults/startwm.sh
+        ;;
+
     *)
         log_error "Unknown desktop environment: $DE_SELECTION (normalised: $DE_UPPER)"
         log_info "Falling back to XFCE4"
@@ -492,6 +524,7 @@ rm -f /startwm-kde.sh /startwm-i3.sh /startwm-xfce.sh /startwm-gnome.sh \
       /startwm-xmonad.sh /startwm-sugar.sh \
       /startwm-dwm.sh /startwm-ratpoison.sh /startwm-blackbox.sh \
       /startwm-pop-os.sh \
+      /startwm-pekwm.sh /startwm-spectrwm.sh /startwm-sawfish.sh \
       2>/dev/null || true
 
 log_info "Desktop Environment setup complete!"
