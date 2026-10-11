@@ -36,7 +36,6 @@ jobs:
           - bspwm
           - gnome-flashback
           - wmaker
-          - pearos
           - herbstluftwm
           - jwm
           - fvwm
