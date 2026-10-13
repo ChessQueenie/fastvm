@@ -592,6 +592,28 @@ persistence, hardware, and update tests are complete.
 
 ---
 
+## 🖥️ **Desktop app (Linux · Windows · macOS)**
+
+Prefer a native window to the command line? `desktop-app/` is an Electron
+client that launches and manages FastVM containers without a terminal.
+
+```bash
+cd desktop-app
+npm install
+npm start
+```
+
+It browses the full catalog (36 desktops × 6 presets, single-app images, and
+distro flavors), builds the `docker run` command for you, then lists running
+containers with Open / Dashboard / Logs / Stop / Remove actions. It needs the
+Docker CLI installed and running.
+
+Build installers with `npm run dist:linux`, `npm run dist:win`, or
+`npm run dist:mac`. See [`desktop-app/README.md`](desktop-app/README.md) for the
+architecture and security notes.
+
+---
+
 ## ✨ **WHAT YOU GET**
 
 ### 🎯 **Core Powers**
