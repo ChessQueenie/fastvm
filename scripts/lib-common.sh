@@ -46,6 +46,40 @@ load_fastvm_config() {
     fi
 }
 
+# GPU helpers ----------------------------------------------------------------
+# Path to the GPU capability record written by gpu-detect.sh.
+gpu_json_path() { echo "${FASTVM_DATA_ROOT}/.fastvm/gpu.json"; }
+
+# Print the encoder id recommended by the last detection (software if unknown).
+gpu_recommended_encoder() {
+    local f; f="$(gpu_json_path)"
+    if [[ -r "$f" ]] && command -v jq >/dev/null 2>&1; then
+        jq -r '.recommended_encoder // "software"' "$f" 2>/dev/null || echo software
+    else
+        echo software
+    fi
+}
+
+# Resolve FASTVM_RECORDING_ENCODER (auto|nvenc|vaapi|qsv|software) to an ffmpeg
+# encoder name. Explicit choices are honoured as-is; "auto" uses the detection
+# result. Detection runs on demand so this works without container init.
+resolve_encoder() {
+    local choice="${FASTVM_RECORDING_ENCODER:-auto}"
+    if [[ "$choice" == "auto" ]]; then
+        local f; f="$(gpu_json_path)"
+        if [[ ! -r "$f" ]] && [[ -x "${FASTVM_SCRIPTS_DIR:-/fastvm-scripts}/gpu-detect.sh" ]]; then
+            "${FASTVM_SCRIPTS_DIR:-/fastvm-scripts}/gpu-detect.sh" detect >/dev/null 2>&1 || true
+        fi
+        choice="$(gpu_recommended_encoder)"
+    fi
+    case "$choice" in
+        nvenc)    echo h264_nvenc ;;
+        vaapi)    echo h264_vaapi ;;
+        qsv)      echo h264_qsv ;;
+        software|*) echo libx264 ;;
+    esac
+}
+
 # Human-readable bytes.
 human_bytes() {
     local bytes=${1:-0}

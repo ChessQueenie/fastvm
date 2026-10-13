@@ -94,9 +94,38 @@
         $('#m-net-rx').textContent = Math.round(m.net.rx_bps / 1024);
         $('#m-net-tx').textContent = Math.round(m.net.tx_bps / 1024);
 
+        applyGpu(m.gpu);
+
         history.push({ ts: m.ts, cpu: m.cpu, mem: m.mem.pct });
         while (history.length > HISTORY_MAX) history.shift();
         drawChart();
+    }
+
+    function applyGpu(gpu) {
+        const valueEl = $('#m-gpu');
+        const unitEl = $('#m-gpu-unit');
+        const detailEl = $('#m-gpu-detail');
+        const barEl = $('#bar-gpu');
+        if (!valueEl || !gpu) return;
+        if (!gpu.detected) {
+            valueEl.textContent = '—';
+            unitEl.textContent = '';
+            detailEl.textContent = 'not detected (software encode)';
+            barEl.style.width = '0%';
+            return;
+        }
+        const vendor = (gpu.vendor || 'unknown').toUpperCase();
+        if (typeof gpu.utilization === 'number') {
+            valueEl.textContent = gpu.utilization;
+            unitEl.textContent = '%';
+            setBarFill(barEl, gpu.utilization);
+            detailEl.textContent = vendor + ' · ' + fmtBytes(gpu.memory_used) + ' / ' + fmtBytes(gpu.memory_total);
+        } else {
+            valueEl.textContent = vendor;
+            unitEl.textContent = '';
+            barEl.style.width = '0%';
+            detailEl.textContent = 'encoder: ' + (gpu.recommended_encoder || 'software');
+        }
     }
 
     function drawChart() {
@@ -219,7 +248,7 @@
     async function refreshRecStatus() {
         const s = await api('/api/recording/status');
         const pill = $('#rec-status');
-        pill.textContent = s.state;
+        pill.textContent = s.state + (s.encoder ? ' · ' + s.encoder : '');
         pill.classList.toggle('recording', s.state === 'recording');
     }
     async function refreshRecordings() {
@@ -313,6 +342,17 @@
         const action = data.pending_action;
         const el = $('#system-action');
         el.textContent = action ? `${action.type}: ${action.status}` : 'no pending action';
+        const gpu = data.gpu;
+        const summary = $('#gpu-summary');
+        if (summary && gpu) {
+            if (gpu.detected) {
+                const enc = gpu.recommended_encoder || 'software';
+                summary.textContent = `${gpu.vendor} GPU · encoder ${enc}` +
+                    (gpu.devices && gpu.devices.length ? ` · ${gpu.devices.length} device(s)` : '');
+            } else {
+                summary.textContent = 'No GPU detected. Recording falls back to software (libx264).';
+            }
+        }
     }
     async function requestSystemAction(type) {
         if (!confirm(`Request ${type}? A trusted host supervisor must approve and execute it.`)) return;

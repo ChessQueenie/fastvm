@@ -21,7 +21,18 @@ router.get('/status', (_req, res) => {
     run(['status'], (err, stdout) => {
         if (err) return res.status(500).json({ error: err.message });
         const lines = stdout.trim().split('\n');
-        res.json({ state: lines[0] || 'idle', file: lines[1] || null });
+        // Output: "encoder=<enc> requested=<req>", then state, then optional file.
+        const meta = {};
+        for (const part of (lines[0] || '').split(' ')) {
+            const [k, v] = part.split('=');
+            if (k) meta[k] = v;
+        }
+        res.json({
+            state: lines[1] || 'idle',
+            file: lines[2] || null,
+            encoder: meta.encoder || null,
+            requested_encoder: meta.requested || null,
+        });
     });
 });
 

@@ -36,4 +36,6 @@ FASTVM_APP_MODRINTH=true
 
 - Flatpak is the easiest path for launcher-based installations.
 - Steam is included by default in the gaming preset.
-- If you are using a host with hardware acceleration available, you can optionally map GPU devices for better gaming performance.
+- If you are using a host with a GPU, enable hardware acceleration with the
+  compose overlays so games can use the GPU and recording can use hardware
+  encode. See [gpu.md](gpu.md) for Intel/AMD and NVIDIA setup.

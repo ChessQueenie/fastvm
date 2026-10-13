@@ -5,6 +5,7 @@
 const express = require('express');
 const fs = require('fs');
 const { execFileSync } = require('child_process');
+const gpu = require('./gpu');
 
 const router = express.Router();
 const HISTORY_LEN = 720; // ~1h at 5s cadence
@@ -77,6 +78,7 @@ function sample() {
         disk: readDisk(process.env.FASTVM_DATA_ROOT || '/config'),
         backups: readDisk(process.env.FASTVM_BACKUP_DIR || '/config/backups'),
         net: readNet(),
+        gpu: gpu.readGpu(),
     };
     history.push(sample);
     if (history.length > HISTORY_LEN) history.shift();

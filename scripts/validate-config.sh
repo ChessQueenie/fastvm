@@ -14,6 +14,8 @@ valid_schedule='^(disabled|daily|weekly|hourly)$'
 valid_compression='^(gzip|zstd|xz)$'
 valid_format='^(mp4|webm|mkv)$'
 valid_codec='^(h264|hevc|vp9)$'
+valid_encoder='^(auto|nvenc|vaapi|qsv|software)$'
+valid_gpu='^(false|true|intel|amd|nvidia)$'
 
 check_regex() {
     local name="$1" value="$2" pattern="$3"
@@ -35,9 +37,11 @@ check_regex FASTVM_PRESET "${FASTVM_PRESET:-none}" "$valid_preset"
 check_regex FASTVM_OS_FLAVOR "${FASTVM_OS_FLAVOR:-standard}" "$valid_flavor"
 check_regex FASTVM_RECORDING_FORMAT "${FASTVM_RECORDING_FORMAT:-mp4}" "$valid_format"
 check_regex FASTVM_RECORDING_CODEC "${FASTVM_RECORDING_CODEC:-h264}" "$valid_codec"
+check_regex FASTVM_RECORDING_ENCODER "${FASTVM_RECORDING_ENCODER:-auto}" "$valid_encoder"
+check_regex FASTVM_GPU "${FASTVM_GPU:-false}" "$valid_gpu"
 check_regex FASTVM_BACKUP_COMPRESSION "${FASTVM_BACKUP_COMPRESSION:-gzip}" "$valid_compression"
 check_regex FASTVM_BACKUP_AUTO_SCHEDULE "${FASTVM_BACKUP_AUTO_SCHEDULE:-daily}" "$valid_schedule"
-for name in FASTVM_AUDIO_ENABLED FASTVM_CLIPBOARD_ENABLED FASTVM_RECORDING_ENABLED FASTVM_BACKUP_ENABLED FASTVM_AUTOSCALE_ENABLED FASTVM_HEALTHCHECK_DISABLE FASTVM_ALLOW_QUERY_TOKEN FASTVM_PRIVILEGED; do
+for name in FASTVM_AUDIO_ENABLED FASTVM_CLIPBOARD_ENABLED FASTVM_RECORDING_ENABLED FASTVM_BACKUP_ENABLED FASTVM_AUTOSCALE_ENABLED FASTVM_HEALTHCHECK_DISABLE FASTVM_ALLOW_QUERY_TOKEN FASTVM_PRIVILEGED FASTVM_ENABLE_GPU_DRIVERS FASTVM_GPU_SELFTEST; do
     check_regex "$name" "${!name:-false}" "$valid_bool"
 done
 check_range FASTVM_PORT "${FASTVM_PORT:-3000}" 1 65535

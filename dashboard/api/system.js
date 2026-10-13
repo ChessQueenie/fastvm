@@ -3,6 +3,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const gpu = require('./gpu');
 
 const router = express.Router();
 const DATA_ROOT = process.env.FASTVM_DATA_ROOT || '/config';
@@ -25,6 +26,7 @@ router.get('/status', (_req, res) => res.json({
     version: process.env.FASTVM_VERSION || 'dev',
     desktop: process.env.FASTVM_DE || 'XFCE4',
     preset: process.env.FASTVM_PRESET || 'none',
+    gpu: gpu.readGpu(),
     pending_action: readAction(),
 }));
 

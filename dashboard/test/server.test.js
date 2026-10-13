@@ -60,4 +60,26 @@ test('system update writes a durable host action request', async () => {
     assert.equal(JSON.parse(fs.readFileSync(path.join(dataRoot, '.fastvm', 'system-action.json'), 'utf8')).type, 'update');
 });
 
+test('gpu endpoints report detected capabilities', async () => {
+    fs.mkdirSync(path.join(dataRoot, '.fastvm'), { recursive: true });
+    fs.writeFileSync(
+        path.join(dataRoot, '.fastvm', 'gpu.json'),
+        JSON.stringify({ detected: true, vendor: 'intel', recommended_encoder: 'vaapi', encoders: { h264_vaapi: true } }),
+    );
+
+    const status = await request('GET', '/api/gpu/status', undefined, 'test-token');
+    assert.equal(status.status, 200);
+    assert.equal(status.body.gpu.detected, true);
+    assert.equal(status.body.gpu.vendor, 'intel');
+
+    const metrics = await request('GET', '/api/gpu/metrics', undefined, 'test-token');
+    assert.equal(metrics.status, 200);
+    assert.equal(metrics.body.detected, true);
+    assert.equal(metrics.body.recommended_encoder, 'vaapi');
+
+    const system = await request('GET', '/api/system/status', undefined, 'test-token');
+    assert.equal(system.status, 200);
+    assert.equal(system.body.gpu.detected, true);
+});
+
 test.after(() => server.close());

@@ -36,6 +36,9 @@ Key settings:
 - `FASTVM_PRESET` — overlays app/resource defaults (none, minimal, gaming, development, office, content-creation, hidencloud-free-vps)
 - `FASTVM_APP_*` / `FASTVM_PROG_*` — toggle individual app installs
 - `FASTVM_DASHBOARD_PORT` — internal port the Node.js dashboard listens on (default 8099 inside container, mapped to host 3001)
+- `FASTVM_RECORDING_ENCODER` — hardware encoder selection: `auto` (default), `nvenc`, `vaapi`, `qsv`, or `software`
+- `FASTVM_ENABLE_GPU_DRIVERS` / `FASTVM_GPU_SELFTEST` — build-time VA-API/Mesa drivers and startup encoder self-test
+- `FASTVM_GPU` — compose overlay selection for `./fastvm-install.sh`: `false` (default), `true|intel|amd`, or `nvidia`
 
 ## Architecture
 
@@ -59,6 +62,7 @@ Node.js/Express server (`server.js`) on port 8099. Authentication via a single t
 
 API modules in `dashboard/api/`:
 - `performance.js` — CPU/memory/disk metrics, WebSocket broadcaster (5s interval)
+- `gpu.js` — GPU capabilities (from `gpu.json`) and live NVIDIA metrics
 - `snapshots.js` — backup/snapshot management
 - `recording.js` — screen recording control (wraps `scripts/screen-recorder.sh`)
 - `clipboard.js` — clipboard sync

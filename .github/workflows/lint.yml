@@ -51,3 +51,24 @@ jobs:
           grep -q 'baseimage-kasmvnc' Dockerfile.optimized
           grep -q 'base image' scripts/audio-init.sh
           bash -n scripts/audio-init.sh scripts/audio-self-test.sh
+
+  validate-gpu:
+    name: Validate GPU support
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax-check GPU scripts
+        run: bash -n scripts/gpu-detect.sh scripts/gpu-self-test.sh scripts/screen-recorder.sh
+      - name: Validate GPU compose overlays
+        run: |
+          python3 - <<'PY'
+          import yaml
+          for f in ("docker-compose.gpu.yml", "docker-compose.gpu-nvidia.yml"):
+              yaml.safe_load(open(f))
+          PY
+      - name: Check GPU config surface is documented
+        run: |
+          set -euo pipefail
+          grep -q 'FASTVM_RECORDING_ENCODER' config.env.example
+          grep -q 'FASTVM_RECORDING_ENCODER' scripts/validate-config.sh
+          grep -q 'docker-compose.gpu.yml' docs/gpu.md

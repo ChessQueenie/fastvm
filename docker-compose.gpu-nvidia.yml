@@ -1,0 +1,23 @@
+# FastVM NVIDIA GPU overlay.
+# Requests NVIDIA GPUs through the NVIDIA Container Toolkit (host prerequisite).
+# Layer this on top of docker-compose.yml (and optionally docker-compose.gpu.yml):
+#
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml \
+#     -f docker-compose.gpu-nvidia.yml up -d
+#
+# Requires: nvidia-container-toolkit installed and `nvidia-ctk runtime configure`
+# run on the host so Docker uses the nvidia runtime.
+services:
+  fastvm:
+    environment:
+      # NVENC needs the video capability; compute covers CUDA/ML workloads.
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all}
+      - NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:-compute,video,utility}
+      - FASTVM_RECORDING_ENCODER=${FASTVM_RECORDING_ENCODER:-auto}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: ${FASTVM_GPU_COUNT:-all}
+              capabilities: [gpu, video, compute, utility]

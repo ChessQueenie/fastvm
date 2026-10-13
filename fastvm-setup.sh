@@ -50,6 +50,26 @@ log_info "Setting up Desktop Environment: $DE_SELECTION"
 
 apt-get update -qq
 
+# GPU userspace drivers (best-effort). These provide VA-API hardware decode/encode
+# for Intel and AMD GPUs via /dev/dri. NVIDIA encoding uses the driver injected by
+# the NVIDIA Container Toolkit and is not installed here. Failures are non-fatal
+# because most FastVM hosts (Codespaces, low-memory VPS) have no GPU at all.
+if [[ "${FASTVM_ENABLE_GPU_DRIVERS:-true}" == "true" ]]; then
+    log_info "Installing GPU userspace drivers (VA-API/Mesa/Vulkan)..."
+    install_packages \
+        mesa-va-drivers \
+        mesa-vulkan-drivers \
+        intel-media-va-driver-non-free \
+        i965-va-driver \
+        libva-drm2 \
+        libva2 \
+        vainfo \
+        vdpau-va-driver \
+        mesa-utils \
+        clinfo \
+        || log_warn "Some GPU driver packages were unavailable; continuing without them"
+fi
+
 case "$DE_UPPER" in
     "KDE"|"KDE PLASMA"|"KDE PLASMA (HEAVY)")
         log_info "Installing KDE Plasma..."

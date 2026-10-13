@@ -73,6 +73,12 @@
                     <div class="metric-value"><span id="m-net-rx">0</span> <small>kb/s &darr;</small></div>
                     <div class="metric-sub"><span id="m-net-tx">0</span> kb/s &uarr;</div>
                 </div>
+                <div class="card metric">
+                    <div class="metric-label">GPU</div>
+                    <div class="metric-value"><span id="m-gpu">—</span><span class="unit" id="m-gpu-unit">%</span></div>
+                    <div class="metric-sub" id="m-gpu-detail">not detected</div>
+                    <div class="bar"><div class="bar-fill" id="bar-gpu"></div></div>
+                </div>
             </div>
 
             <div class="card chart-card">
@@ -164,6 +170,10 @@
                     <div class="card-title">Updates</div>
                     <p class="muted">Request an image update without granting the dashboard shell access.</p>
                     <button id="system-update" class="primary">Request update</button>
+                </div>
+                <div class="card action-card">
+                    <div class="card-title">GPU acceleration</div>
+                    <p class="muted" id="gpu-summary">detecting&hellip;</p>
                 </div>
             </div>
         </section>
