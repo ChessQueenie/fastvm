@@ -493,6 +493,80 @@ case "$DE_UPPER" in
         cp /startwm-sawfish.sh /defaults/startwm.sh
         ;;
 
+    "OPENBOX"|"OPENBOX (MINIMAL)"|"OPENBOX (VERY LIGHTWEIGHT)")
+        log_info "Installing Openbox..."
+        # Openbox is a standalone stacking window manager with no bundled
+        # desktop shell; add a panel/menu/task switcher via tint2 and rofi.
+        install_packages \
+            openbox \
+            obconf \
+            tint2 \
+            rofi \
+            xterm \
+            x11-xserver-utils \
+            firefox
+        cp /startwm-openbox.sh /defaults/startwm.sh
+        ;;
+
+    "AFTERSTEP"|"AFTERSTEP (LIGHTWEIGHT)"|"AFTERSTEP (NEXTSTEP)")
+        log_info "Installing AfterStep..."
+        install_packages \
+            afterstep \
+            xterm \
+            x11-xserver-utils \
+            firefox
+        # AfterStep ships its default configuration under /usr/share/afterstep;
+        # the session launcher seeds it per-user on first run.
+        cp /startwm-afterstep.sh /defaults/startwm.sh
+        ;;
+
+    "CTWM"|"CTWM (LIGHTWEIGHT)"|"CTWM (CLASSIC)")
+        log_info "Installing ctwm..."
+        install_packages \
+            ctwm \
+            xterm \
+            x11-xserver-utils \
+            firefox
+        # ctwm reads /etc/X11/ctwm/system.ctwmrc; the launcher installs a
+        # per-user copy so the window menu works out of the box.
+        cp /startwm-ctwm.sh /defaults/startwm.sh
+        ;;
+
+    "TWM"|"TWM (CLASSIC)"|"TWM (MINIMAL)")
+        log_info "Installing twm..."
+        install_packages \
+            twm \
+            xterm \
+            x11-xserver-utils \
+            firefox
+        # twm reads /etc/X11/twm/system.twmrc-menu; the launcher installs a
+        # per-user copy so the root menu works out of the box.
+        cp /startwm-twm.sh /defaults/startwm.sh
+        ;;
+
+    "NIXOS"|"NIX"|"NIXOS (OPENBOX)")
+        log_info "Installing the NixOS flavor desktop..."
+        # Additive distro flavor: the Ubuntu 22.04 base and KasmVNC stack are
+        # unchanged. This installs the Nix package manager (Ubuntu's nix-bin)
+        # plus a minimal Openbox shell, and pairs with FASTVM_OS_FLAVOR=nixos.
+        install_packages \
+            openbox \
+            obconf \
+            tint2 \
+            rofi \
+            xterm \
+            x11-xserver-utils \
+            nix-bin \
+            firefox
+        # Enable the Nix daemon profile path without requiring nix-daemon.
+        if command -v nix >/dev/null 2>&1; then
+            mkdir -p /nix/var/nix/profiles/default/etc/profile.d
+            ln -sf /etc/profile.d/nix.sh \
+                /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh 2>/dev/null || true
+        fi
+        cp /startwm-nixos.sh /defaults/startwm.sh
+        ;;
+
     *)
         log_error "Unknown desktop environment: $DE_SELECTION (normalised: $DE_UPPER)"
         log_info "Falling back to XFCE4"
@@ -525,6 +599,8 @@ rm -f /startwm-kde.sh /startwm-i3.sh /startwm-xfce.sh /startwm-gnome.sh \
       /startwm-dwm.sh /startwm-ratpoison.sh /startwm-blackbox.sh \
       /startwm-pop-os.sh \
       /startwm-pekwm.sh /startwm-spectrwm.sh /startwm-sawfish.sh \
+      /startwm-openbox.sh /startwm-afterstep.sh \
+      /startwm-ctwm.sh /startwm-twm.sh /startwm-nixos.sh \
       2>/dev/null || true
 
 log_info "Desktop Environment setup complete!"

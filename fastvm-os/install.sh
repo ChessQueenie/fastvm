@@ -469,6 +469,47 @@ EOF
     exit 0
 fi
 
+# ---------------------------------------------------------------------------
+# Additive base-distribution flavor: NixOS.
+# NixOS is an independent, declarative Linux distribution. FastVM does not
+# replace the Ubuntu 22.04/KasmVNC base; instead this additive flavor installs
+# the Nix package manager (Ubuntu's `nix-bin`) plus a minimal Openbox shell via
+# fastvm-setup.sh (FASTVM_DE=NixOS) and writes the NixOS identity files. It
+# never replaces or repoints the Ubuntu base image.
+# ---------------------------------------------------------------------------
+if [[ "$flavor" == "nixos" || "$flavor" == "nix" ]]; then
+    install -d -m 0755 /etc/nixos /etc/issue.d /usr/local/bin /etc/profile.d
+    cat > /etc/nixos/release <<'EOF'
+NAME="NixOS"
+ID=nixos
+ID_LIKE=nix
+PRETTY_NAME="NixOS (FastVM flavor)"
+VARIANT="Declarative Linux distribution, Nix package manager on Ubuntu 22.04 base"
+EOF
+
+    cat > /etc/profile.d/nixos.sh <<'EOF'
+# NixOS identity; configuration remains controlled by FASTVM_* variables.
+export FASTVM_DISTRO_FLAVOR="nixos"
+EOF
+
+    cat > /usr/local/bin/nixos-info <<'EOF'
+#!/bin/sh
+set -eu
+cat /etc/nixos/release
+if command -v nix >/dev/null 2>&1; then
+    printf 'Nix: %s\n' "$(nix --version)"
+else
+    printf 'Nix: not installed\n'
+fi
+printf 'Desktop: %s\nPreset: %s\n' "${FASTVM_DE:-NixOS}" "${FASTVM_PRESET:-none}"
+EOF
+    chmod 0755 /usr/local/bin/nixos-info
+
+    printf 'NixOS (FastVM flavor) - Ubuntu 22.04 base with Nix\n' > /etc/issue.d/nixos.issue
+    echo "Installed NixOS distro identity layer"
+    exit 0
+fi
+
 if [[ "$flavor" != "fastvm-os" ]]; then
     echo "Unsupported FastVM OS flavor: $flavor" >&2
     exit 1

@@ -48,6 +48,11 @@ jobs:
           - pekwm
           - spectrwm
           - sawfish
+          - openbox
+          - afterstep
+          - ctwm
+          - twm
+          - nixos
         preset:
           - none
           - minimal
@@ -716,9 +721,46 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-parrot
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-parrot,mode=max
 
+  build-nixos:
+    name: Build NixOS distro flavor
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Set lowercase image name
+        id: image
+        run: echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push NixOS
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.optimized
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:nixos-latest
+            ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:nixos-${{ github.sha }}
+          build-args: |
+            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+            VERSION=${{ github.ref_name }}
+            FASTVM_DE=nixos
+            FASTVM_PRESET=development
+            FASTVM_OS_FLAVOR=nixos
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-nixos
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-nixos,mode=max
+
   build-summary:
     runs-on: ubuntu-latest
-    needs: [build, build-specials, build-fastvm-os, build-ubuntu-studio, build-ubuntu-kylin, build-ubuntu-budgie, build-ubuntu-edubuntu, build-ubuntu-xfce, build-ubuntu-lubuntu, build-kubuntu, build-ubuntu-mate, build-ubuntu-unity, build-pop-os, build-linuxmint, build-kali, build-parrot]
+    needs: [build, build-specials, build-fastvm-os, build-ubuntu-studio, build-ubuntu-kylin, build-ubuntu-budgie, build-ubuntu-edubuntu, build-ubuntu-xfce, build-ubuntu-lubuntu, build-kubuntu, build-ubuntu-mate, build-ubuntu-unity, build-pop-os, build-linuxmint, build-kali, build-parrot, build-nixos]
     if: always()
     steps:
       - name: Set lowercase image name

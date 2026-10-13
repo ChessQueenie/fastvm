@@ -7,7 +7,7 @@
 
 ### 🎯 One Command. Full Desktop.
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Jetbrains+Mono&size=20&duration=3000&pause=1000&color=6366F1&center=true&vCenter=true&width=700&height=100&lines=⚡+Stream+a+full+Linux+desktop+in+your+browser;🚀+198+production-ready+image+variants;🎨+30+desktop+environments+to+choose+from;💻+Zero+local+setup%2C+instant+deployment;🔥+30-second+startup%2C+pure+speed)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Jetbrains+Mono&size=20&duration=3000&pause=1000&color=6366F1&center=true&vCenter=true&width=700&height=100&lines=⚡+Stream+a+full+Linux+desktop+in+your+browser;🚀+229+production-ready+image+variants;🎨+35+desktop+environments+to+choose+from;💻+Zero+local+setup%2C+instant+deployment;🔥+30-second+startup%2C+pure+speed)](https://git.io/typing-svg)
 
 <br/>
 
@@ -17,7 +17,7 @@ https://discord.gg/aahtG9n537
 ### ⚡ STATUS
 
 <a href="https://github.com/CloudCompile/fastvm/actions"><img src="https://img.shields.io/github/actions/workflow/status/CloudCompile/fastvm/build-images.yml?branch=main&style=for-the-badge&logo=github-actions&logoColor=white&label=CI%20BUILDS&color=6366f1&labelColor=1e1b4b" alt="CI Status"></a>
-<a href="https://github.com/CloudCompile/fastvm"><img src="https://img.shields.io/badge/📦%20IMAGES-198%20VARIANTS-a855f7?style=for-the-badge&labelColor=0a0e27" alt="Docker Images"></a>
+<a href="https://github.com/CloudCompile/fastvm"><img src="https://img.shields.io/badge/📦%20IMAGES-229%20VARIANTS-a855f7?style=for-the-badge&labelColor=0a0e27" alt="Docker Images"></a>
 <a href="https://github.com/CloudCompile/fastvm/stargazers"><img src="https://img.shields.io/github/stars/cloudcompile/fastvm?style=for-the-badge&logo=starship&logoColor=white&color=ffd60a&labelColor=0a0e27" alt="GitHub Stars"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-ff006e?style=for-the-badge&labelColor=0a0e27" alt="License"></a>
 
@@ -38,7 +38,7 @@ https://discord.gg/aahtG9n537
 
   ```text
   ✅ Successful Builds:     2+
-  📦 Published Image Variants: 198
+  📦 Published Image Variants: 229
   📝 Total Commits:         141
   🕐 Last Updated:          2026-10-13 01:03:15 UTC
   ```
@@ -338,6 +338,46 @@ docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sawfish-development-lates
 docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sawfish-office-latest
 docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sawfish-content-creation-latest
 
+# openbox
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-content-creation-latest
+
+# afterstep
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-content-creation-latest
+
+# ctwm
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-content-creation-latest
+
+# twm
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-content-creation-latest
+
+# nixos (Openbox shell + Nix package manager; pairs with the nixos flavor)
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-content-creation-latest
+
 ```
 
 ### 2. Single-app images (ultra-minimal, no desktop)
@@ -384,6 +424,8 @@ docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:linuxmint-la
 docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:kali-latest
 # Parrot Security OS (MATE)
 docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:parrot-latest
+# NixOS flavor (Openbox shell + Nix package manager)
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:nixos-latest
 ```
 
 ### 4. Docker Compose deployments
@@ -437,6 +479,9 @@ docker compose -f docker-compose.yml -f docker-compose.kali.yml up -d --build
 # parrot flavor overlay (Parrot Security OS (MATE))
 docker compose -f docker-compose.yml -f docker-compose.parrot.yml up -d --build
 
+# nixos flavor overlay (NixOS identity + Nix package manager on an Openbox shell)
+docker compose -f docker-compose.yml -f docker-compose.nixos.yml up -d --build
+
 ```
 
 ### 5. Build straight from the Dockerfile
@@ -483,6 +528,378 @@ FASTVM_DE=pop-os FASTVM_OS_FLAVOR=pop-os ./fastvm-install.sh
 FASTVM_DE=Cinnamon FASTVM_OS_FLAVOR=linuxmint ./fastvm-install.sh
 FASTVM_DE=XFCE4 FASTVM_OS_FLAVOR=kali ./fastvm-install.sh
 FASTVM_DE=MATE FASTVM_OS_FLAVOR=parrot ./fastvm-install.sh
+FASTVM_DE=nixos FASTVM_OS_FLAVOR=nixos ./fastvm-install.sh
+```
+
+### 7. Complete deployment reference (every image and its command)
+
+Every published image, with the exact one-line command to deploy it. The
+generic form for any desktop + preset image is:
+
+```bash
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:<desktop>-<preset>-latest
+```
+
+#### Desktop + preset images (210 combinations)
+
+```bash
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xfce4-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xfce4-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xfce4-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xfce4-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xfce4-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xfce4-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:kde-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:kde-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:kde-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:kde-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:kde-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:kde-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:cinnamon-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:cinnamon-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:cinnamon-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:cinnamon-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:cinnamon-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:cinnamon-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxqt-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxqt-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxqt-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxqt-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxqt-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxqt-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:i3-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:i3-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:i3-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:i3-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:i3-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:i3-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:budgie-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:budgie-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:budgie-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:budgie-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:budgie-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:budgie-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:mate-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:mate-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:mate-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:mate-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:mate-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:mate-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxde-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxde-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxde-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxde-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxde-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:lxde-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fluxbox-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fluxbox-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fluxbox-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fluxbox-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fluxbox-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fluxbox-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:unity-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:unity-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:unity-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:unity-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:unity-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:unity-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:enlightenment-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:enlightenment-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:enlightenment-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:enlightenment-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:enlightenment-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:enlightenment-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:icewm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:icewm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:icewm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:icewm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:icewm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:icewm-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:awesome-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:awesome-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:awesome-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:awesome-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:awesome-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:awesome-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ukui-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ukui-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ukui-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ukui-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ukui-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ukui-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:bspwm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:bspwm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:bspwm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:bspwm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:bspwm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:bspwm-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-flashback-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-flashback-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-flashback-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-flashback-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-flashback-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:gnome-flashback-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:wmaker-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:wmaker-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:wmaker-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:wmaker-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:wmaker-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:wmaker-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:herbstluftwm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:herbstluftwm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:herbstluftwm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:herbstluftwm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:herbstluftwm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:herbstluftwm-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:jwm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:jwm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:jwm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:jwm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:jwm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:jwm-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fvwm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fvwm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fvwm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fvwm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fvwm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:fvwm-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xmonad-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xmonad-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xmonad-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xmonad-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xmonad-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xmonad-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sugar-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sugar-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sugar-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sugar-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sugar-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sugar-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:dwm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:dwm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:dwm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:dwm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:dwm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:dwm-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ratpoison-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ratpoison-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ratpoison-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ratpoison-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ratpoison-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ratpoison-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:blackbox-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:blackbox-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:blackbox-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:blackbox-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:blackbox-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:blackbox-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pop-os-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pop-os-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pop-os-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pop-os-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pop-os-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pop-os-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pekwm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pekwm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pekwm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pekwm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pekwm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pekwm-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:spectrwm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:spectrwm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:spectrwm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:spectrwm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:spectrwm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:spectrwm-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sawfish-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sawfish-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sawfish-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sawfish-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sawfish-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:sawfish-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:openbox-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:afterstep-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:ctwm-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:twm-content-creation-latest
+
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-content-creation-latest
+
+```
+
+#### Single-app images (4)
+
+```bash
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:browser-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:discord-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:vscode-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:terminal-latest
+```
+
+#### Distro-flavor images (15, dashboard on port 3001)
+
+```bash
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:fastvm-os-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:ubuntu-studio-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:ubuntu-kylin-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:ubuntu-budgie-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:ubuntu-edubuntu-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:xubuntu-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:lubuntu-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:kubuntu-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:ubuntu-mate-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:ubuntu-unity-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:pop-os-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:linuxmint-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:kali-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:parrot-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:nixos-latest
+```
+
+#### Docker Compose deployments
+
+```bash
+# Base stack (whatever FASTVM_DE/FASTVM_PRESET are set to in config.env):
+docker compose up -d --build
+
+# Specific desktop/preset with no overlay:
+FASTVM_DE=KDE FASTVM_PRESET=gaming docker compose up -d --build
+
+# fastvm-os flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.fastvm-os.yml up -d --build
+
+# ubuntu-studio flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.ubuntu-studio.yml up -d --build
+
+# ubuntu-kylin flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.ubuntu-kylin.yml up -d --build
+
+# ubuntu-budgie flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.ubuntu-budgie.yml up -d --build
+
+# ubuntu-edubuntu flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.ubuntu-edubuntu.yml up -d --build
+
+# xubuntu flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.xubuntu.yml up -d --build
+
+# lubuntu flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.lubuntu.yml up -d --build
+
+# kubuntu flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.kubuntu.yml up -d --build
+
+# ubuntu-mate flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.ubuntu-mate.yml up -d --build
+
+# ubuntu-unity flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.ubuntu-unity.yml up -d --build
+
+# pop-os flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.pop-os.yml up -d --build
+
+# linuxmint flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.linuxmint.yml up -d --build
+
+# kali flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.kali.yml up -d --build
+
+# parrot flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.parrot.yml up -d --build
+
+# nixos flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.nixos.yml up -d --build
+
+```
+
+#### Build straight from the Dockerfile
+
+```bash
+# Any desktop + preset:
+docker build -f Dockerfile.optimized \
+  --build-arg FASTVM_DE=XFCE4 \
+  --build-arg FASTVM_PRESET=development \
+  -t fastvm:local .
+docker run -d -p 3000:3000 -p 3001:8099 fastvm:local
+
+# Any distro flavor (example: nixos):
+docker build -f Dockerfile.optimized \
+  --build-arg FASTVM_DE=nixos \
+  --build-arg FASTVM_PRESET=development \
+  --build-arg FASTVM_OS_FLAVOR=nixos \
+  -t fastvm:nixos .
+docker run -d -p 3000:3000 -p 3001:8099 fastvm:nixos
+```
+
+#### Helper install script
+
+```bash
+./fastvm-install.sh
+FASTVM_DE=KDE FASTVM_PRESET=gaming ./fastvm-install.sh
+FASTVM_DE=nixos FASTVM_OS_FLAVOR=nixos ./fastvm-install.sh
 ```
 
 ---
@@ -772,6 +1189,26 @@ To build it locally using the flavor layer directly:
 FASTVM_DE=MATE FASTVM_OS_FLAVOR=parrot ./fastvm-install.sh
 ```
 
+## ❄️ NixOS distro flavor
+
+FastVM also publishes an additive `nixos-latest` image. NixOS is an independent
+declarative Linux distribution; FastVM layers a NixOS identity plus the Nix
+package manager (`nix-bin`) on the same Ubuntu/KasmVNC base, paired with a
+minimal Openbox shell. Like the other flavors it only adds a distro identity
+layer (`/etc/nixos/release`, `/usr/local/bin/nixos-info`) and does **not**
+replace or repoint the existing Ubuntu base or any desktop/preset tag.
+
+```bash
+docker run -d -p 3000:3000 -p 3001:8099 \
+  ghcr.io/cloudcompile/fastvm:nixos-latest
+```
+
+To build it locally using the flavor layer directly:
+
+```bash
+FASTVM_DE=nixos FASTVM_OS_FLAVOR=nixos ./fastvm-install.sh
+```
+
 ### Recovery and updates
 
 The dashboard **System** view creates authenticated `recovery` and `update`
@@ -792,8 +1229,8 @@ persistence, hardware, and update tests are complete.
 
 | 🏃 SPEED | 🎨 CHOICE | ☁️ CLOUD | 💾 DATA |
 |:---:|:---:|:---:|:---:|
-| **30-sec startup** | **30 desktops** | **Deploy anywhere** | **Auto-backup** |
-| 198 prebuilt images | XFCE4 → Pop!_OS | Codespaces ready | Point-in-time restore |
+| **30-sec startup** | **35 desktops** | **Deploy anywhere** | **Auto-backup** |
+| 229 prebuilt images | XFCE4 → Pop!_OS | Codespaces ready | Point-in-time restore |
 | Parallel CI/CD | Pick your vibe | Infinite scaling | Persistent storage |
 | Layer caching | Lightweight+full | Zero local setup | Snapshot manager |
 
@@ -885,6 +1322,11 @@ docker run -d -p 3000:3000 --device /dev/dri ghcr.io/cloudcompile/fastvm:kde-gam
 | 🧊 **PekWM** | 96 MB | ⚡⚡⚡⚡⚡ | Stacking WM | Very lightweight stacking WM with a right-click root menu, made for speed |
 | ⌨️ **spectrwm** | 96 MB | ⚡⚡⚡⚡⚡ | Dynamic tiling | Xmonad/i3-inspired dynamic tiling WM, keyboard driven, extremely light |
 | 🐟 **Sawfish** | 128 MB | ⚡⚡⚡⚡⚡ | Lisp-scriptable WM | Reparenting WM scripted in Lisp, highly configurable, light |
+| 🪟 **Openbox** | 128 MB | ⚡⚡⚡⚡⚡ | Stacking WM | Configurable stacking WM with tint2 panel + rofi launcher, very light |
+| 🔷 **AfterStep** | 160 MB | ⚡⚡⚡⚡ | NeXTSTEP-style | NeXTSTEP-inspired WM with Wharf dock and Pager, light |
+| 🏛️ **CTWM** | 128 MB | ⚡⚡⚡⚡⚡ | Classic WM | twm with virtual desktops and a window menu, very light |
+| ⬛ **TWM** | 96 MB | ⚡⚡⚡⚡⚡ | Minimal WM | The original X11 tab window manager, absolute minimum |
+| ❄️ **NixOS** | 256 MB | ⚡⚡⚡⚡ | Openbox + Nix | NixOS identity layer with the Nix package manager on an Openbox shell |
 | 🟠 **Pop!_OS** | 2 GB | ⚡⚡ | GNOME (System76) | Pop!_OS 22.04 GNOME Shell + Pop GTK/icon themes, pairs with the pop-os flavor |
 
 ---
