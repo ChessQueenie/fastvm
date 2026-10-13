@@ -510,6 +510,43 @@ EOF
     exit 0
 fi
 
+# ---------------------------------------------------------------------------
+# Additive base-distribution flavor: pearOS.
+# pearOS is an Arch-based distribution that customises KDE Plasma to resemble
+# macOS. Its own packages are not in the Ubuntu 22.04 archive (the supported
+# build path), so the desktop is installed by fastvm-setup.sh (FASTVM_DE=pearos)
+# from the available KDE Plasma stack plus macOS-like theming, and this layer
+# only writes pearOS identity files. It never replaces or repoints the Ubuntu
+# base image.
+# ---------------------------------------------------------------------------
+if [[ "$flavor" == "pearos" || "$flavor" == "pear-os" || "$flavor" == "pear" ]]; then
+    install -d -m 0755 /etc/pearos /etc/issue.d /usr/local/bin /etc/profile.d
+    cat > /etc/pearos/release <<'EOF'
+NAME="pearOS"
+ID=pearos
+ID_LIKE="arch"
+PRETTY_NAME="pearOS (FastVM flavor)"
+VARIANT="macOS-inspired KDE Plasma desktop on the Ubuntu 22.04 base"
+EOF
+
+    cat > /etc/profile.d/pearos.sh <<'EOF'
+# pearOS identity; configuration remains controlled by FASTVM_* variables.
+export FASTVM_DISTRO_FLAVOR="pearos"
+EOF
+
+    cat > /usr/local/bin/pearos-info <<'EOF'
+#!/bin/sh
+set -eu
+cat /etc/pearos/release
+printf 'Desktop: %s\nPreset: %s\n' "${FASTVM_DE:-pearos}" "${FASTVM_PRESET:-none}"
+EOF
+    chmod 0755 /usr/local/bin/pearos-info
+
+    printf 'pearOS (FastVM flavor) - macOS-inspired KDE Plasma on Ubuntu 22.04 base\n' > /etc/issue.d/pearos.issue
+    echo "Installed pearOS distro identity layer"
+    exit 0
+fi
+
 if [[ "$flavor" != "fastvm-os" ]]; then
     echo "Unsupported FastVM OS flavor: $flavor" >&2
     exit 1

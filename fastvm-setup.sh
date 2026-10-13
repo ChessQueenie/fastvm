@@ -567,6 +567,24 @@ case "$DE_UPPER" in
         cp /startwm-nixos.sh /defaults/startwm.sh
         ;;
 
+    "PEAROS"|"PEAR OS"|"PEAR-OS"|"PEAROS (KDE)")
+        log_info "Installing the pearOS (macOS-inspired KDE Plasma) desktop..."
+        # pearOS is an Arch-based distribution that customises KDE Plasma to look
+        # like macOS. Its own packages are not in the Ubuntu 22.04 archive, so
+        # this reuses the available KDE Plasma stack plus macOS-like theming and
+        # pairs with FASTVM_OS_FLAVOR=pearos.
+        install_packages \
+            plasma-desktop \
+            plasma-workspace \
+            kwin-x11 \
+            systemsettings \
+            kde-config-gtk-style \
+            kde-style-breeze \
+            papirus-icon-theme \
+            firefox
+        cp /startwm-pearos.sh /defaults/startwm.sh
+        ;;
+
     *)
         log_error "Unknown desktop environment: $DE_SELECTION (normalised: $DE_UPPER)"
         log_info "Falling back to XFCE4"
@@ -601,6 +619,7 @@ rm -f /startwm-kde.sh /startwm-i3.sh /startwm-xfce.sh /startwm-gnome.sh \
       /startwm-pekwm.sh /startwm-spectrwm.sh /startwm-sawfish.sh \
       /startwm-openbox.sh /startwm-afterstep.sh \
       /startwm-ctwm.sh /startwm-twm.sh /startwm-nixos.sh \
+      /startwm-pearos.sh \
       2>/dev/null || true
 
 log_info "Desktop Environment setup complete!"

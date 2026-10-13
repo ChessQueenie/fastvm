@@ -53,6 +53,7 @@ jobs:
           - ctwm
           - twm
           - nixos
+          - pearos
         preset:
           - none
           - minimal
@@ -758,9 +759,46 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-nixos
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-nixos,mode=max
 
+  build-pearos:
+    name: Build pearOS distro flavor
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Set lowercase image name
+        id: image
+        run: echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push pearOS
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.optimized
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:pearos-latest
+            ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:pearos-${{ github.sha }}
+          build-args: |
+            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+            VERSION=${{ github.ref_name }}
+            FASTVM_DE=pearos
+            FASTVM_PRESET=development
+            FASTVM_OS_FLAVOR=pearos
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-pearos
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:buildcache-pearos,mode=max
+
   build-summary:
     runs-on: ubuntu-latest
-    needs: [build, build-specials, build-fastvm-os, build-ubuntu-studio, build-ubuntu-kylin, build-ubuntu-budgie, build-ubuntu-edubuntu, build-ubuntu-xfce, build-ubuntu-lubuntu, build-kubuntu, build-ubuntu-mate, build-ubuntu-unity, build-pop-os, build-linuxmint, build-kali, build-parrot, build-nixos]
+    needs: [build, build-specials, build-fastvm-os, build-ubuntu-studio, build-ubuntu-kylin, build-ubuntu-budgie, build-ubuntu-edubuntu, build-ubuntu-xfce, build-ubuntu-lubuntu, build-kubuntu, build-ubuntu-mate, build-ubuntu-unity, build-pop-os, build-linuxmint, build-kali, build-parrot, build-nixos, build-pearos]
     if: always()
     steps:
       - name: Set lowercase image name
@@ -810,7 +848,7 @@ jobs:
           echo "docker run -d -p 3000:3000 $IMAGE:xfce4-development-latest" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **All 178 images built in parallel. Existing variants remain available.**" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **All 230 images built in parallel. Existing variants remain available.**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🖥️ FastVM OS appliance" >> $GITHUB_STEP_SUMMARY
           echo "The additive \\`fastvm-os-latest\\` image is XFCE4 + development with the FastVM OS identity layer." >> $GITHUB_STEP_SUMMARY
@@ -853,3 +891,6 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🦜 Parrot Security OS distro flavor" >> $GITHUB_STEP_SUMMARY
           echo "The additive \\`parrot-latest\\` image is MATE + development with the Parrot Security OS identity layer." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🍐 pearOS distro flavor" >> $GITHUB_STEP_SUMMARY
+          echo "The additive \\`pearos-latest\\` image is KDE Plasma + development with the pearOS (macOS-inspired) identity layer." >> $GITHUB_STEP_SUMMARY

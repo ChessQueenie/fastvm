@@ -7,7 +7,7 @@
 
 ### 🎯 One Command. Full Desktop.
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Jetbrains+Mono&size=20&duration=3000&pause=1000&color=6366F1&center=true&vCenter=true&width=700&height=100&lines=⚡+Stream+a+full+Linux+desktop+in+your+browser;🚀+229+production-ready+image+variants;🎨+35+desktop+environments+to+choose+from;💻+Zero+local+setup%2C+instant+deployment;🔥+30-second+startup%2C+pure+speed)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Jetbrains+Mono&size=20&duration=3000&pause=1000&color=6366F1&center=true&vCenter=true&width=700&height=100&lines=⚡+Stream+a+full+Linux+desktop+in+your+browser;🚀+236+production-ready+image+variants;🎨+36+desktop+environments+to+choose+from;💻+Zero+local+setup%2C+instant+deployment;🔥+30-second+startup%2C+pure+speed)](https://git.io/typing-svg)
 
 <br/>
 
@@ -17,7 +17,7 @@ https://discord.gg/aahtG9n537
 ### ⚡ STATUS
 
 <a href="https://github.com/CloudCompile/fastvm/actions"><img src="https://img.shields.io/github/actions/workflow/status/CloudCompile/fastvm/build-images.yml?branch=main&style=for-the-badge&logo=github-actions&logoColor=white&label=CI%20BUILDS&color=6366f1&labelColor=1e1b4b" alt="CI Status"></a>
-<a href="https://github.com/CloudCompile/fastvm"><img src="https://img.shields.io/badge/📦%20IMAGES-229%20VARIANTS-a855f7?style=for-the-badge&labelColor=0a0e27" alt="Docker Images"></a>
+<a href="https://github.com/CloudCompile/fastvm"><img src="https://img.shields.io/badge/📦%20IMAGES-236%20VARIANTS-a855f7?style=for-the-badge&labelColor=0a0e27" alt="Docker Images"></a>
 <a href="https://github.com/CloudCompile/fastvm/stargazers"><img src="https://img.shields.io/github/stars/cloudcompile/fastvm?style=for-the-badge&logo=starship&logoColor=white&color=ffd60a&labelColor=0a0e27" alt="GitHub Stars"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-ff006e?style=for-the-badge&labelColor=0a0e27" alt="License"></a>
 
@@ -38,7 +38,7 @@ https://discord.gg/aahtG9n537
 
   ```text
   ✅ Successful Builds:     2+
-  📦 Published Image Variants: 229
+  📦 Published Image Variants: 236
   📝 Total Commits:         146
   🕐 Last Updated:          2026-10-13 21:40:39 UTC
   ```
@@ -378,6 +378,14 @@ docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-development-latest
 docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-office-latest
 docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-content-creation-latest
 
+# pearos (macOS-inspired KDE Plasma; pairs with the pearos flavor)
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-content-creation-latest
+
 ```
 
 ### 2. Single-app images (ultra-minimal, no desktop)
@@ -426,6 +434,8 @@ docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:kali-latest
 docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:parrot-latest
 # NixOS flavor (Openbox shell + Nix package manager)
 docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:nixos-latest
+# pearOS (macOS-inspired KDE Plasma)
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:pearos-latest
 ```
 
 ### 4. Docker Compose deployments
@@ -482,6 +492,9 @@ docker compose -f docker-compose.yml -f docker-compose.parrot.yml up -d --build
 # nixos flavor overlay (NixOS identity + Nix package manager on an Openbox shell)
 docker compose -f docker-compose.yml -f docker-compose.nixos.yml up -d --build
 
+# pearos flavor overlay (pearOS macOS-inspired KDE Plasma)
+docker compose -f docker-compose.yml -f docker-compose.pearos.yml up -d --build
+
 ```
 
 ### 5. Build straight from the Dockerfile
@@ -529,6 +542,7 @@ FASTVM_DE=Cinnamon FASTVM_OS_FLAVOR=linuxmint ./fastvm-install.sh
 FASTVM_DE=XFCE4 FASTVM_OS_FLAVOR=kali ./fastvm-install.sh
 FASTVM_DE=MATE FASTVM_OS_FLAVOR=parrot ./fastvm-install.sh
 FASTVM_DE=nixos FASTVM_OS_FLAVOR=nixos ./fastvm-install.sh
+FASTVM_DE=pearos FASTVM_OS_FLAVOR=pearos ./fastvm-install.sh
 ```
 
 ### 7. Complete deployment reference (every image and its command)
@@ -540,7 +554,7 @@ generic form for any desktop + preset image is:
 docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:<desktop>-<preset>-latest
 ```
 
-#### Desktop + preset images (210 combinations)
+#### Desktop + preset images (216 combinations)
 
 ```bash
 docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:xfce4-none-latest
@@ -788,6 +802,13 @@ docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-development-latest
 docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-office-latest
 docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:nixos-content-creation-latest
 
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-none-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-minimal-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-gaming-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-development-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-office-latest
+docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:pearos-content-creation-latest
+
 ```
 
 #### Single-app images (4)
@@ -799,7 +820,7 @@ docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:vscode-latest
 docker run -d -p 3000:3000 ghcr.io/cloudcompile/fastvm:terminal-latest
 ```
 
-#### Distro-flavor images (15, dashboard on port 3001)
+#### Distro-flavor images (16, dashboard on port 3001)
 
 ```bash
 docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:fastvm-os-latest
@@ -817,6 +838,7 @@ docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:linuxmint-la
 docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:kali-latest
 docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:parrot-latest
 docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:nixos-latest
+docker run -d -p 3000:3000 -p 3001:8099 ghcr.io/cloudcompile/fastvm:pearos-latest
 ```
 
 #### Docker Compose deployments
@@ -873,6 +895,9 @@ docker compose -f docker-compose.yml -f docker-compose.parrot.yml up -d --build
 # nixos flavor overlay
 docker compose -f docker-compose.yml -f docker-compose.nixos.yml up -d --build
 
+# pearos flavor overlay
+docker compose -f docker-compose.yml -f docker-compose.pearos.yml up -d --build
+
 ```
 
 #### Build straight from the Dockerfile
@@ -900,6 +925,7 @@ docker run -d -p 3000:3000 -p 3001:8099 fastvm:nixos
 ./fastvm-install.sh
 FASTVM_DE=KDE FASTVM_PRESET=gaming ./fastvm-install.sh
 FASTVM_DE=nixos FASTVM_OS_FLAVOR=nixos ./fastvm-install.sh
+FASTVM_DE=pearos FASTVM_OS_FLAVOR=pearos ./fastvm-install.sh
 ```
 
 ---
@@ -1209,6 +1235,27 @@ To build it locally using the flavor layer directly:
 FASTVM_DE=nixos FASTVM_OS_FLAVOR=nixos ./fastvm-install.sh
 ```
 
+## 🍐 pearOS distro flavor
+
+FastVM also publishes an additive `pearos-latest` image. pearOS is an Arch-based
+distribution that customises KDE Plasma to look and feel like macOS. FastVM does
+not replace the Ubuntu 22.04/KasmVNC base; instead this additive flavor installs
+the KDE Plasma desktop via fastvm-setup.sh (`FASTVM_DE=pearos`) with macOS-like
+theming and writes the pearOS identity layer (`/etc/pearos/release`,
+`/usr/local/bin/pearos-info`). It does **not** replace or repoint the existing
+Ubuntu base or any desktop/preset tag.
+
+```bash
+docker run -d -p 3000:3000 -p 3001:8099 \
+  ghcr.io/cloudcompile/fastvm:pearos-latest
+```
+
+To build it locally using the flavor layer directly:
+
+```bash
+FASTVM_DE=pearos FASTVM_OS_FLAVOR=pearos ./fastvm-install.sh
+```
+
 ### Recovery and updates
 
 The dashboard **System** view creates authenticated `recovery` and `update`
@@ -1229,8 +1276,8 @@ persistence, hardware, and update tests are complete.
 
 | 🏃 SPEED | 🎨 CHOICE | ☁️ CLOUD | 💾 DATA |
 |:---:|:---:|:---:|:---:|
-| **30-sec startup** | **35 desktops** | **Deploy anywhere** | **Auto-backup** |
-| 229 prebuilt images | XFCE4 → Pop!_OS | Codespaces ready | Point-in-time restore |
+| **30-sec startup** | **36 desktops** | **Deploy anywhere** | **Auto-backup** |
+| 236 prebuilt images | XFCE4 → Pop!_OS | Codespaces ready | Point-in-time restore |
 | Parallel CI/CD | Pick your vibe | Infinite scaling | Persistent storage |
 | Layer caching | Lightweight+full | Zero local setup | Snapshot manager |
 
@@ -1328,6 +1375,7 @@ docker run -d -p 3000:3000 --device /dev/dri ghcr.io/cloudcompile/fastvm:kde-gam
 | ⬛ **TWM** | 96 MB | ⚡⚡⚡⚡⚡ | Minimal WM | The original X11 tab window manager, absolute minimum |
 | ❄️ **NixOS** | 256 MB | ⚡⚡⚡⚡ | Openbox + Nix | NixOS identity layer with the Nix package manager on an Openbox shell |
 | 🟠 **Pop!_OS** | 2 GB | ⚡⚡ | GNOME (System76) | Pop!_OS 22.04 GNOME Shell + Pop GTK/icon themes, pairs with the pop-os flavor |
+| 🍐 **pearOS** | 1.5 GB | ⚡⚡⚡ | macOS-like KDE | macOS-inspired KDE Plasma desktop + Papirus icons, pairs with the pearos flavor |
 
 ---
 

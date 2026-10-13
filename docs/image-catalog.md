@@ -1,17 +1,17 @@
 # FastVM Image Catalog
 
-FastVM publishes 210 desktop/preset combinations and 4 single-app variants.
+FastVM publishes 216 desktop/preset combinations and 4 single-app variants.
 Tags follow `<desktop>-<preset>-latest` or `<name>-latest`; release tags add
 `-vX.Y.Z`. The supported desktop values are `xfce4`, `kde`, `gnome`,
 `cinnamon`, `lxqt`, `i3`, `budgie`, `mate`, `lxde`, `fluxbox`, `unity`,
 `enlightenment`, `icewm`, `awesome`, `ukui`, `bspwm`, `herbstluftwm`, `jwm`,
 `fvwm`, `gnome-flashback`, `wmaker`, `xmonad`, `sugar`, `dwm`, `ratpoison`,
 `blackbox`, `pekwm`, `spectrwm`, `sawfish`, `openbox`, `afterstep`, `ctwm`,
-`twm`, `nixos`, and `pop-os`.
+`twm`, `nixos`, `pearos`, and `pop-os`.
 Presets are `none`, `minimal`, `gaming`, `development`, `office`, and
 `content-creation`.
 
-Fifteen additive distro-flavor images are published separately and do not
+Sixteen additive distro-flavor images are published separately and do not
 replace any desktop/preset tag: `fastvm-os-latest` (Openbox/Tint2 appliance
 shell), `ubuntu-studio-latest` (KDE Plasma with the Ubuntu Studio 22.04 identity
 layer), `ubuntu-kylin-latest` (UKUI with the Ubuntu Kylin 22.04 identity layer),
@@ -25,14 +25,15 @@ layer), `ubuntu-kylin-latest` (UKUI with the Ubuntu Kylin 22.04 identity layer),
 `pop-os-latest` (Pop!_OS GNOME with the Pop GTK/icon themes),
 `linuxmint-latest` (Cinnamon with the Linux Mint identity layer),
 `kali-latest` (XFCE with the Kali Linux security-focused identity layer),
-`parrot-latest` (MATE with the Parrot Security OS identity layer), and
-`nixos-latest` (NixOS identity + Nix package manager on the Openbox shell).
+`parrot-latest` (MATE with the Parrot Security OS identity layer),
+`nixos-latest` (NixOS identity + Nix package manager on the Openbox shell), and
+`pearos-latest` (pearOS macOS-inspired KDE Plasma identity layer).
 
 | Category | Variants | Notes |
 | --- | ---: | --- |
-| Desktop + preset | 210 | Built from the workflow matrix |
+| Desktop + preset | 216 | Built from the workflow matrix |
 | Single-app | 4 | browser, discord, vscode, terminal |
-| Distro flavor | 15 | fastvm-os, ubuntu-studio, ubuntu-kylin, ubuntu-budgie, ubuntu-edubuntu, xubuntu, lubuntu, kubuntu, ubuntu-mate, ubuntu-unity, pop-os, linuxmint, kali, parrot, nixos |
+| Distro flavor | 16 | fastvm-os, ubuntu-studio, ubuntu-kylin, ubuntu-budgie, ubuntu-edubuntu, xubuntu, lubuntu, kubuntu, ubuntu-mate, ubuntu-unity, pop-os, linuxmint, kali, parrot, nixos, pearos |
 
 Exact package contents are defined by `presets/*.preset` and
 `installable-apps/*.sh`; update this document when the workflow matrix changes.
