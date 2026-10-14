@@ -57,7 +57,47 @@ fastvm_gpu_apply() {
         export MESA_LOADER_DRIVER_OVERRIDE=zink
         export GALLIUM_DRIVER=zink
         export __GLX_VENDOR_LIBRARY_NAME=nvidia
+        # No DRI3 on NVIDIA, so compositing can stay on.
+        return 0
     fi
+
+    # Open-source driver: KasmVNC DRI3 can now rasterize the desktop. That only
+    # helps if the window manager stops compositing (DRI3 cannot composite), so
+    # disable the compositor for the desktops that support it.
+    fastvm_gpu_disable_compositing
+    return 0
+}
+
+# Turn off desktop compositing for desktops that allow it. Without this the WM
+# keeps rendering through llvmpipe even when DRI3 is active. No-op when
+# FASTVM_GPU_KEEP_COMPOSITING=true, and for desktops that cannot disable it.
+fastvm_gpu_disable_compositing() {
+    [[ "${FASTVM_GPU_KEEP_COMPOSITING:-false}" == "true" ]] && return 0
+    local de="${FASTVM_DE:-}" home="${HOME:-/config}"
+    de="${de^^}"
+    case "$de" in
+        XFCE*)
+            if command -v xfconf-query >/dev/null 2>&1; then
+                xfconf-query -c xfwm4 -p /general/use_compositing -n -t bool -s false >/dev/null 2>&1 || true
+            fi
+            ;;
+        KDE*|PLASMA*)
+            if command -v kwriteconfig6 >/dev/null 2>&1; then
+                kwriteconfig6 --file kwinrc --group Compositing --key Enabled false >/dev/null 2>&1 || true
+            elif command -v kwriteconfig5 >/dev/null 2>&1; then
+                kwriteconfig5 --file kwinrc --group Compositing --key Enabled false >/dev/null 2>&1 || true
+            fi
+            ;;
+        MATE*)
+            if command -v gsettings >/dev/null 2>&1; then
+                gsettings set org.mate.Marco.general compositing-manager false >/dev/null 2>&1 || true
+            fi
+            ;;
+        *)
+            # GNOME, Cinnamon, Budgie, Unity and others cannot disable
+            # compositing; the desktop stays on llvmpipe by design.
+            ;;
+    esac
     return 0
 }
 

@@ -14,8 +14,9 @@ services:
       - FASTVM_RECORDING_ENCODER=${FASTVM_RECORDING_ENCODER:-auto}
       - FASTVM_ENABLE_GPU_DRIVERS=${FASTVM_ENABLE_GPU_DRIVERS:-true}
       # Opt in to GPU-rasterized desktop sessions (KasmVNC DRI3 + per-session
-      # userspace env). Requires disabling desktop compositing; see docs/gpu.md.
+      # userspace env). Disables the compositor on XFCE/KDE/MATE; see docs/gpu.md.
       - FASTVM_GPU_HW=${FASTVM_GPU_HW:-true}
+      - FASTVM_GPU_KEEP_COMPOSITING=${FASTVM_GPU_KEEP_COMPOSITING:-false}
       # Pick a specific DRM render node on multi-GPU hosts (default renderD128).
       - DRINODE=${DRINODE:-/dev/dri/renderD128}
     group_add:

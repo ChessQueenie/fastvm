@@ -100,24 +100,31 @@ Hardware encoders produce H.264, so `auto` forces an H.264-capable container
 
 KasmVNC's DRI3 mode does **not** support desktop compositing: with the
 compositor enabled, the window manager (and therefore the whole desktop) renders
-through `llvmpipe` on the CPU even when a GPU is mapped. To get GPU-rasterized
-desktop sessions, turn the compositor off.
+through `llvmpipe` on the CPU even when a GPU is mapped. So for GPU rasterization
+to be *real*, compositing has to be off.
 
 `FASTVM_GPU_HW=true` (set by the GPU overlays) sources
-`scripts/gpu-session-env.sh` into the session, which exports the GPU render node
-(`LIBVA_DRM_DEVICE`, plus Zink variables on NVIDIA) so applications use the same
-GPU. The compositor itself is a per-desktop setting:
+`scripts/gpu-session-env.sh` into the session. On an open-source GPU (Intel/AMD)
+the helper:
 
-| Desktop | Where to disable compositing |
-| ------- | ---------------------------- |
-| XFCE    | Settings Manager → Window Manager Tweaks → Compositor → uncheck "Enable display compositing" |
-| KDE     | System Settings → Display and Monitor → Compositor → uncheck "Enable on startup" |
-| MATE    | System → Control Center → Windows → uncheck "Enable software compositing window manager" |
+1. exports the GPU render node (`LIBVA_DRM_DEVICE`) so applications use it, and
+2. **disables desktop compositing** for the desktops that support it, so the
+   window manager rasterizes on the GPU instead of `llvmpipe`.
+
+| Desktop | Compositing handled how |
+| ------- | ----------------------- |
+| XFCE    | Disabled automatically (`xfwm4 /general/use_compositing=false`) |
+| KDE     | Disabled automatically (`kwinrc [Compositing] Enabled=false`) |
+| MATE    | Disabled automatically (`marco compositing-manager=false`) |
 | GNOME   | Not supported; GNOME is forced to use `llvmpipe` |
+| Others  | Left as-is (no compositor or no setting); apps still use the GPU |
 
-> Leave compositing **enabled** if you need translucent windows and effects and
-> do not mind the desktop rendering on the CPU. GPU compute, hardware encode, and
-> application rendering still work; only the desktop rasterization falls back.
+To keep compositing and window effects anyway, set
+`FASTVM_GPU_KEEP_COMPOSITING=true` — the desktop then renders on the CPU, while
+GPU compute, hardware encode, and application rendering still work.
+
+> On NVIDIA the compositor is left untouched: the closed driver has no DRI3, so
+> there is no rasterization to unlock and the session uses Zink instead (below).
 
 ## 5. Detection, status, and self-test
 

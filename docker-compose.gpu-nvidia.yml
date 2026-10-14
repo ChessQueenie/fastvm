@@ -22,6 +22,7 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:-compute,video,graphics,utility}
       - FASTVM_RECORDING_ENCODER=${FASTVM_RECORDING_ENCODER:-auto}
       - FASTVM_GPU_HW=${FASTVM_GPU_HW:-true}
+      - FASTVM_GPU_KEEP_COMPOSITING=${FASTVM_GPU_KEEP_COMPOSITING:-false}
       - DRINODE=${DRINODE:-/dev/dri/renderD128}
     group_add:
       - video

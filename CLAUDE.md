@@ -39,7 +39,8 @@ Key settings:
 - `FASTVM_RECORDING_ENCODER` — hardware encoder selection: `auto` (default), `nvenc`, `vaapi`, `qsv`, or `software`
 - `FASTVM_ENABLE_GPU_DRIVERS` / `FASTVM_GPU_SELFTEST` — build-time VA-API/Mesa drivers and startup encoder self-test
 - `FASTVM_GPU` — compose overlay selection for `./fastvm-install.sh`: `false` (default), `true|intel|amd`, or `nvidia`
-- `FASTVM_GPU_HW` — opt in to a GPU-rasterized desktop session (KasmVNC DRI3 + `scripts/gpu-session-env.sh`); requires desktop compositing to be off
+- `FASTVM_GPU_HW` — opt in to a GPU-rasterized desktop session (KasmVNC DRI3 + `scripts/gpu-session-env.sh`); disables the compositor on XFCE/KDE/MATE
+- `FASTVM_GPU_KEEP_COMPOSITING` — keep desktop compositing even with GPU rasterization (forces CPU/llvmpipe rendering)
 - `DRINODE` — DRM render node for multi-GPU hosts (default `/dev/dri/renderD128`)
 
 ## Architecture
