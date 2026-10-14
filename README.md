@@ -592,25 +592,26 @@ persistence, hardware, and update tests are complete.
 
 ---
 
-## 🖥️ **Desktop app (Linux · Windows · macOS)**
+## 🛒 **FastVM Marketplace (desktop app)**
 
-Prefer a native window to the command line? `desktop-app/` is an Electron
-client that launches and manages FastVM containers without a terminal.
+Prefer clicking to typing? `desktop-app/` is a **Tauri 2** desktop client that
+turns FastVM into a one-click marketplace for streamed Linux desktops.
+
+Browse desktops, distros, and presets, pick one, and hit **Deploy** — the app
+builds the `docker run` command, starts the container, and opens the desktop in
+your browser. Running instances show up with Open / Dashboard / Logs / Stop /
+Remove actions. It runs on Linux, Windows, and macOS.
 
 ```bash
 cd desktop-app
 npm install
-npm start
+npm run dev      # develop
+npm run build    # build installers for your OS
 ```
 
-It browses the full catalog (36 desktops × 6 presets, single-app images, and
-distro flavors), builds the `docker run` command for you, then lists running
-containers with Open / Dashboard / Logs / Stop / Remove actions. It needs the
-Docker CLI installed and running.
-
-Build installers with `npm run dist:linux`, `npm run dist:win`, or
-`npm run dist:mac`. See [`desktop-app/README.md`](desktop-app/README.md) for the
-architecture and security notes.
+It needs the Docker CLI installed and running. See
+[`desktop-app/README.md`](desktop-app/README.md) for the architecture and
+security notes.
 
 ---
 

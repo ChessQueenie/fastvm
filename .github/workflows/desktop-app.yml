@@ -16,36 +16,67 @@ on:
 
 jobs:
   test:
-    name: Lint & test (${{ matrix.os }})
+    name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-    defaults:
-      run:
-        working-directory: desktop-app
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev \
+            libayatana-appindicator3-dev librsvg2-dev libxdo-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop-app/src-tauri
+
+      - name: Rust unit tests
+        working-directory: desktop-app/src-tauri
+        run: cargo test --verbose
+
+      - name: Verify catalog matches the build matrix
+        run: node scripts/verify-catalog.js
+
+  build:
+    name: Build bundle (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev \
+            libayatana-appindicator3-dev librsvg2-dev libxdo-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop-app/src-tauri
 
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Install dependencies
+      - name: Install the Tauri CLI
+        working-directory: desktop-app
         run: npm install
 
-      - name: Syntax check
-        run: |
-          node --check src/main/main.js
-          node --check src/main/preload.js
-          node --check src/main/catalog.js
-          node --check src/main/docker.js
-          node --check src/main/config.js
-          node --check src/renderer/renderer.js
-
-      - name: Verify catalog matches the build matrix
-        run: node ../scripts/verify-catalog.js
-
-      - name: Unit tests
-        run: npm test
+      - name: Build the app
+        working-directory: desktop-app
+        run: npm run build

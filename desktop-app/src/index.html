@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FastVM Marketplace</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo">⚡</span> FastVM <span class="muted">Marketplace</span></div>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Search desktops, distros, presets…" autocomplete="off" />
+    </div>
+    <div class="status" id="docker-status">Checking Docker…</div>
+  </header>
+
+  <nav class="tabs" id="tabs"></nav>
+
+  <main class="layout">
+    <section class="store">
+      <div class="grid" id="grid"></div>
+      <p class="empty hidden" id="no-results">No apps match your search.</p>
+    </section>
+
+    <aside class="panel details" id="details">
+      <div class="details-empty" id="details-empty">
+        <div class="big">⚡</div>
+        <p>Pick an app to see details and deploy it in one click.</p>
+      </div>
+      <div class="details-body hidden" id="details-body"></div>
+    </aside>
+  </main>
+
+  <section class="instances-bar">
+    <div class="instances-head">
+      <h2>Running instances <span class="muted" id="instance-count"></span></h2>
+      <button class="ghost" id="refresh">Refresh</button>
+    </div>
+    <div class="instances-list" id="instances"></div>
+  </section>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><span id="modal-title">Logs</span><button class="ghost" id="modal-close">Close</button></div>
+      <pre id="modal-body"></pre>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

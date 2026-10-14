@@ -2,40 +2,15 @@
   "name": "fastvm-desktop",
   "version": "0.1.0",
   "private": true,
-  "description": "FastVM desktop client - launch and manage streamed Linux desktops from Linux, Windows, and macOS.",
-  "main": "src/main/main.js",
+  "description": "FastVM marketplace - one-click streamed Linux desktops (Tauri).",
   "scripts": {
-    "start": "electron .",
-    "test": "node --test",
-    "dist": "electron-builder",
-    "dist:linux": "electron-builder --linux",
-    "dist:win": "electron-builder --win",
-    "dist:mac": "electron-builder --mac"
-  },
-  "engines": {
-    "node": ">=18"
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "tauri": "tauri",
+    "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "verify": "node ../scripts/verify-catalog.js"
   },
   "devDependencies": {
-    "electron": "^44.0.0",
-    "electron-builder": "^26.0.0"
-  },
-  "build": {
-    "appId": "dev.cloudcompile.fastvm",
-    "productName": "FastVM",
-    "files": [
-      "src/**/*",
-      "package.json"
-    ],
-    "linux": {
-      "target": ["AppImage", "deb"],
-      "category": "Utility"
-    },
-    "win": {
-      "target": ["nsis"]
-    },
-    "mac": {
-      "target": ["dmg"],
-      "category": "public.app-category.utilities"
-    }
+    "@tauri-apps/cli": "^2.12.0"
   }
 }
