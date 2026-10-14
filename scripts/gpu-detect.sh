@@ -49,9 +49,10 @@ detect() {
 
     render_node="$(ls /dev/dri/renderD* 2>/dev/null | head -n1 || true)"
     card="$(ls /dev/dri/card* 2>/dev/null | head -n1 || true)"
-    # Test hooks (no GPU needed in CI): force the classification inputs.
-    [[ -n "${FASTVM_GPU_FORCE_RENDER_NODE:-}" ]] && render_node="${FASTVM_GPU_FORCE_RENDER_NODE}"
-    [[ -n "${FASTVM_GPU_FORCE_CARD:-}" ]] && card="${FASTVM_GPU_FORCE_CARD}"
+    # Test hooks (no GPU needed in CI): when set, they override the probe —
+    # including an empty value, which forces "no such node".
+    [[ -n "${FASTVM_GPU_FORCE_RENDER_NODE+x}" ]] && render_node="${FASTVM_GPU_FORCE_RENDER_NODE}"
+    [[ -n "${FASTVM_GPU_FORCE_CARD+x}" ]] && card="${FASTVM_GPU_FORCE_CARD}"
 
     if detect_nvidia; then
         vendor="nvidia"

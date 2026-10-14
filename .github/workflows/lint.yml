@@ -82,6 +82,7 @@ jobs:
           : > "$tmp/dev/dri/renderD128"
           # AMD render node with no KMS card node => compute-only accelerator.
           FASTVM_GPU_FORCE_RENDER_NODE="$tmp/dev/dri/renderD128" \
+            FASTVM_GPU_FORCE_CARD="" \
             FASTVM_GPU_FORCE_VENDOR=amd \
             bash scripts/gpu-detect.sh detect
           bash scripts/gpu-detect.sh show | grep -q '"compute_only": true'
