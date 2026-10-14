@@ -1,13 +1,17 @@
 {
   "defaultapps": [
     0,
-    1
+    1,
+    2
   ],
   "programming": [],
-  "apps": [],
+  "apps": [
+    0
+  ],
   "enablekvm": true,
   "DE": "XFCE4 (Lightweight)",
   "preset": "none",
+  "bundle": "essentials",
   "audio": true,
   "clipboard": true,
   "recording": true,

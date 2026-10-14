@@ -37,3 +37,19 @@ layer), `ubuntu-kylin-latest` (UKUI with the Ubuntu Kylin 22.04 identity layer),
 
 Exact package contents are defined by `presets/*.preset` and
 `installable-apps/*.sh`; update this document when the workflow matrix changes.
+
+## App bundles
+
+Desktop images bake in a curated **app bundle** rather than only a browser. The
+`none` preset uses the desktop default (`essentials` for full desktops, `browser`
+for minimal WMs); other presets map to their matching bundle. See
+[app-bundles.md](app-bundles.md).
+
+## Single-app images
+
+| Tag | App |
+| --- | --- |
+| `browser-latest` | Chrome |
+| `discord-latest` | Discord (no desktop environment) — see [discord-vm.md](discord-vm.md) |
+| `vscode-latest` | VSCodium |
+| `terminal-latest` | terminal |

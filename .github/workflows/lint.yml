@@ -37,6 +37,49 @@ jobs:
       - name: Check options.json is valid JSON
         run: python3 -m json.tool options.json > /dev/null
 
+  validate-bundles:
+    name: Validate app bundles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bundle resolution produces the expected apps
+        run: |
+          set -euo pipefail
+          check() {
+            local label="$1" expected="$2"; shift 2
+            got="$(python3 scripts/render-options-json.py /dev/null /dev/stdout "$@" 2>/dev/null \
+              | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d["bundle"],d["defaultapps"],d["programming"],d["apps"])')"
+            if [[ "$got" != "$expected" ]]; then
+              echo "FAIL $label"; echo "  expected: $expected"; echo "  got:      $got"; exit 1
+            fi
+            echo "ok $label -> $got"
+          }
+          # XFCE4 default: essentials = chrome(1) + xarchiver(2) + vlc(apps 0)
+          check "xfce4/none" "essentials [1, 2] [] [0]" --desktop xfce4 --preset none
+          # Minimal WM default: browser = chrome(1)
+          check "i3/none" "browser [1] [] []" --desktop i3 --preset none
+          # Preset bundle overrides desktop default
+          check "kde/gaming" "gaming [0, 1, 3, 4, 5] [1] [4, 5, 6, 7]" --desktop kde --preset gaming
+          check "gnome/office" "office [1, 2] [] [1]" --desktop gnome --preset office
+          # Single-app images must never pick up a bundle
+          got="$(FASTVM_SINGLEAPP_SCRIPT=discord-only.sh python3 scripts/render-options-json.py /dev/null /dev/stdout --desktop singleapp --preset none 2>/dev/null \
+            | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d["bundle"],d["defaultapps"],d["apps"])')"
+          [[ "$got" == "none [] []" ]] || { echo "FAIL singleapp -> $got"; exit 1; }
+          echo "ok singleapp -> $got"
+      - name: Dockerfile generates options.json from build args
+        run: |
+          set -euo pipefail
+          grep -q 'render-options-json.py /dev/null /options.json' Dockerfile.optimized
+          grep -q 'FASTVM_APP_BUNDLE' Dockerfile.optimized
+      - name: Bundle config surface is documented
+        run: |
+          set -euo pipefail
+          grep -q 'FASTVM_APP_BUNDLE' config.env
+          grep -q 'FASTVM_APP_BUNDLE' config.env.example
+          grep -q 'FASTVM_APP_BUNDLE' scripts/validate-config.sh
+          grep -q 'docs/app-bundles.md' CLAUDE.md
+          grep -q 'webcam' docs/roadmap.md
+
   validate-audio:
     name: Validate audio setup
     runs-on: ubuntu-latest

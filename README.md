@@ -82,7 +82,9 @@ Startup time depends on the host, image, and selected applications. Measure it o
 - The dashboard token is stored in `data/dashboard.token` and is never printed to logs. Prefer the `Authorization: Bearer` header; query-string tokens are disabled by default.
 - Compose uses `privileged: false` by default. Enable it only when the workload requires broad device access, and expose the service through HTTPS/authenticated proxying outside a trusted network.
 
-See `SECURITY.md`, `docs/image-catalog.md`, `docs/benchmarks.md`, and `docs/gpu.md` for operational guidance.
+See `SECURITY.md`, `docs/image-catalog.md`, `docs/benchmarks.md`, `docs/gpu.md`,
+`docs/app-bundles.md`, `docs/discord-vm.md`, and `docs/roadmap.md` for operational
+guidance.
 
 ## 📦 **Every Deployment Option**
 

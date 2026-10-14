@@ -34,7 +34,8 @@ All runtime settings live in `config.env`. Changes require `docker-compose down 
 Key settings:
 - `FASTVM_DE` — desktop environment (XFCE4 default; options: KDE, GNOME, Cinnamon, LXQT, I3, Budgie, MATE, LXDE, Fluxbox, Unity, UbuntuStudio, Enlightenment, IceWM, awesome, UKUI, fastvm-os)
 - `FASTVM_PRESET` — overlays app/resource defaults (none, minimal, gaming, development, office, content-creation, hidencloud-free-vps)
-- `FASTVM_APP_*` / `FASTVM_PROG_*` — toggle individual app installs
+- `FASTVM_APP_BUNDLE` — curated app set baked into the image: precedence `FASTVM_APP_BUNDLE` > preset > desktop default. Options: (empty=auto), none, browser, essentials, communication, gaming, development, office, content-creation. See `docs/app-bundles.md`
+- `FASTVM_APP_*` / `FASTVM_PROG_*` — toggle individual app installs (additive on top of the bundle)
 - `FASTVM_DASHBOARD_PORT` — internal port the Node.js dashboard listens on (default 8099 inside container, mapped to host 3001)
 - `FASTVM_RECORDING_ENCODER` — hardware encoder selection: `auto` (default), `nvenc`, `vaapi`, `qsv`, or `software`
 - `FASTVM_ENABLE_GPU_DRIVERS` / `FASTVM_GPU_SELFTEST` — build-time VA-API/Mesa drivers and startup encoder self-test
@@ -53,10 +54,10 @@ Key settings:
 The base image's nginx handles port 3000. The dashboard bypasses it entirely and listens directly on 8099.
 
 ### Dockerfile layers (in order)
-1. `options.json` + `root/` — KasmVNC config and WM startup scripts
+1. `root/` — KasmVNC config and WM startup scripts
 2. System deps (PulseAudio, ffmpeg, xclip, cron, etc.)
 3. `fastvm-setup.sh` — installs the chosen desktop environment
-4. `installapps-parallel.sh` — installs optional apps from `config.env`
+4. `render-options-json.py` generates `options.json` from build args, then `installapps-parallel.sh` installs the bundle + optional apps
 5. `scripts/` → `/opt/fastvm-scripts/` — runtime shell scripts
 6. `dashboard/` → `/opt/fastvm-dashboard/` — Node.js dashboard (`npm install` runs here)
 7. `presets/` → `/opt/fastvm-presets/` — preset config overlays

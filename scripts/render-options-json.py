@@ -1,41 +1,115 @@
 #!/usr/bin/env python3
-"""Translate config.env/app toggles into the JSON used by installapps-parallel.sh."""
+"""Translate config.env / build args into the JSON used by installapps-parallel.sh.
 
+App selection is bundle-driven: each desktop and each preset has a default app
+bundle (a curated set of apps), and individual ``FASTVM_APP_*`` / ``FASTVM_PROG_*``
+toggles add to it. This is what makes a desktop image ship a useful app set
+instead of only a browser.
+
+Resolution order for the bundle (first non-empty wins):
+
+1. ``FASTVM_APP_BUNDLE`` (config file, ``--bundle``, or the environment)
+2. the preset's bundle (see ``PRESET_BUNDLE``), when a preset other than ``none``
+   is selected
+3. the desktop's default bundle (see ``DESKTOP_BUNDLE``)
+
+Usage::
+
+    render-options-json.py [config.env] [options.json] [--bundle NAME] [--desktop DE]
+
+Environment variables (``FASTVM_APP_*``, ``FASTVM_PROG_*``, ``FASTVM_APP_BUNDLE``,
+``FASTVM_DE``) override the config file, so the Docker build can drive the whole
+manifest from ``ARG``/``ENV``.
+"""
+
+import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
+# App key -> (group, index) in options.json.
+APP_MANIFEST = {
+    "wine": ("defaultapps", 0),
+    "chrome": ("defaultapps", 1),
+    "xarchiver": ("defaultapps", 2),
+    "discord": ("defaultapps", 3),
+    "steam": ("defaultapps", 4),
+    "minecraft": ("defaultapps", 5),
+    "java8": ("programming", 0),
+    "java17": ("programming", 1),
+    "vscodium": ("programming", 2),
+    "vlc": ("apps", 0),
+    "libreoffice": ("apps", 1),
+    "synaptic": ("apps", 2),
+    "aqemu": ("apps", 3),
+    "tlauncher": ("apps", 4),
+    "flatpak": ("apps", 5),
+    "heroic": ("apps", 6),
+    "modrinth": ("apps", 7),
+}
+
+# Curated bundles. "essentials" is the desktop default; the rest map to a preset
+# or an explicit FASTVM_APP_BUNDLE choice.
+BUNDLE_APPS = {
+    "none": [],
+    "browser": ["chrome"],
+    "essentials": ["chrome", "xarchiver", "vlc"],
+    "communication": ["chrome", "discord"],
+    "gaming": [
+        "wine", "steam", "heroic", "tlauncher", "modrinth",
+        "minecraft", "flatpak", "discord", "chrome", "java17",
+    ],
+    "development": ["vscodium", "chrome", "java17", "flatpak"],
+    "office": ["libreoffice", "chrome", "xarchiver"],
+    "content-creation": ["chrome", "vlc", "flatpak", "discord"],
+}
+
+VALID_BUNDLES = tuple(BUNDLE_APPS)
+
+# Preset -> bundle. "none" falls through to the desktop default.
+PRESET_BUNDLE = {
+    "minimal": "browser",
+    "gaming": "gaming",
+    "development": "development",
+    "office": "office",
+    "content-creation": "content-creation",
+    "hidencloud-free-vps": "essentials",
+}
+
+# Desktops that ship almost nothing by nature get the bare browser bundle; every
+# other desktop gets the full essentials set so images are not empty.
+LIGHT_DESKTOPS = {
+    "I3", "DWM", "dwm", "Ratpoison", "RATPOISON", "ratpoison", "BSPWM",
+    "Herbstluftwm", "herbstluftwm", "HLWM", "Spectrwm", "SPECTRWM", "spectrwm",
+    "awesome", "XMonad", "XMONAD", "xmonad", "Fluxbox", "Blackbox", "BLACKBOX",
+    "blackbox", "JWM", "Jwm", "jwm", "FVWM", "Fvwm", "fvwm", "FVWM2",
+    "CTWM", "ctwm", "TWM", "twm", "openbox", "Openbox", "OPENBOX", "PekWM",
+    "pekwm", "PEKWM", "Sawfish", "SAWFISH", "sawfish", "AfterStep", "AFTERSTEP",
+    "afterstep", "WMAKER", "WindowMaker", "Window Maker", "IceWM", "LXDE",
+}
 
 DEFAULTS = {
-    "FASTVM_APP_WINE": "false",
-    "FASTVM_APP_CHROME": "false",
-    "FASTVM_APP_XARCHIVER": "false",
-    "FASTVM_APP_DISCORD": "false",
-    "FASTVM_APP_STEAM": "false",
-    "FASTVM_APP_MINECRAFT": "false",
-    "FASTVM_PROG_JAVA8": "false",
-    "FASTVM_PROG_JAVA17": "false",
-    "FASTVM_PROG_VSCODIUM": "false",
-    "FASTVM_APP_VLC": "false",
-    "FASTVM_APP_LIBREOFFICE": "false",
-    "FASTVM_APP_SYNAPTIC": "false",
-    "FASTVM_APP_AQEMU": "false",
-    "FASTVM_APP_TLAUNCHER": "false",
-    "FASTVM_APP_FLATPAK": "false",
-    "FASTVM_APP_HEROIC": "false",
-    "FASTVM_APP_MODRINTH": "false",
+    "FASTVM_DE": "XFCE4",
+    "FASTVM_PRESET": "none",
+    "FASTVM_APP_BUNDLE": "",
+    "FASTVM_SINGLEAPP_SCRIPT": "",
     "FASTVM_AUDIO_ENABLED": "true",
     "FASTVM_CLIPBOARD_ENABLED": "true",
     "FASTVM_RECORDING_ENABLED": "true",
     "FASTVM_BACKUP_ENABLED": "true",
-    "FASTVM_PRESET": "none",
-    "FASTVM_DE": "XFCE4",
 }
+
+
+def env_var_for(app_key: str) -> str:
+    if app_key in {"java8", "java17", "vscodium"}:
+        return "FASTVM_PROG_" + app_key.upper()
+    return "FASTVM_APP_" + app_key.upper()
 
 
 def parse_env_file(path: Path):
     values = {}
-    if not path.exists():
+    if not path or not path.exists():
         return values
     for raw_line in path.read_text(encoding="utf-8").splitlines():
         line = raw_line.strip()
@@ -96,8 +170,8 @@ def map_desktop(value):
         "BLACKBOX": "Blackbox (Minimal WM)",
         "pop-os": "Pop!_OS (GNOME)",
         "Pop-OS": "Pop!_OS (GNOME)",
-        "POP-OS": "Pop!_OS (GNOME)",
-        "POPOS": "Pop!_OS (GNOME)",
+        "POP-OS": "POP!_OS (GNOME)",
+        "POPOS": "POP!_OS (GNOME)",
         "pekwm": "PekWM (Lightweight)",
         "PekWM": "PekWM (Lightweight)",
         "PEKWM": "PekWM (Lightweight)",
@@ -113,58 +187,83 @@ def map_desktop(value):
     return mapping.get(str(value), str(value))
 
 
-def build_group(entries, env):
-    selected = []
-    for key, index in entries:
-        if is_truthy(env.get(key, DEFAULTS.get(key, "false"))):
-            selected.append(index)
-    return selected
+def desktop_default_bundle(desktop: str) -> str:
+    return "browser" if str(desktop).lower() in {d.lower() for d in LIGHT_DESKTOPS} else "essentials"
 
 
-def main():
-    config_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("config.env")
-    output_path = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("options.json")
+def resolve_bundle(env, explicit_bundle=None, desktop=None):
+    # Single-app images install exactly one app via FASTVM_SINGLEAPP_SCRIPT, so
+    # they must never pick up a bundle.
+    if str(env.get("FASTVM_SINGLEAPP_SCRIPT") or "").strip():
+        return "none"
 
-    env = parse_env_file(config_path)
+    # 1. Explicit bundle (CLI, config, or env).
+    bundle = (explicit_bundle or env.get("FASTVM_APP_BUNDLE") or "").strip().lower()
+    if bundle and bundle != "none":
+        return bundle if bundle in BUNDLE_APPS else "essentials"
+
+    # 2. Preset bundle.
+    preset = (env.get("FASTVM_PRESET") or "none").strip()
+    if preset != "none":
+        mapped = PRESET_BUNDLE.get(preset)
+        if mapped:
+            return mapped
+
+    # 3. Desktop default.
+    return desktop_default_bundle(desktop or env.get("FASTVM_DE", "XFCE4"))
+
+
+def build_manifest(env, bundle):
+    selected = set(BUNDLE_APPS.get(bundle, []))
+    # Individual toggles add to the bundle (true wins; false cannot subtract).
+    for app_key in APP_MANIFEST:
+        value = env.get(env_var_for(app_key))
+        if value is not None and is_truthy(value):
+            selected.add(app_key)
+
+    groups = {"defaultapps": [], "programming": [], "apps": []}
+    for app_key, (group, index) in APP_MANIFEST.items():
+        if app_key in selected:
+            groups[group].append(index)
+    for group in groups:
+        groups[group].sort()
+    return groups
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Render options.json from config.env")
+    parser.add_argument("config", nargs="?", default="config.env")
+    parser.add_argument("output", nargs="?", default="options.json")
+    parser.add_argument("--bundle", default=None, help="App bundle name (overrides preset/desktop default)")
+    parser.add_argument("--desktop", default=None, help="Desktop id (overrides config)")
+    parser.add_argument("--preset", default=None, help="Preset name (overrides config)")
+    args = parser.parse_args(argv)
+
+    env = parse_env_file(Path(args.config))
     for key, value in DEFAULTS.items():
         env.setdefault(key, value)
+    # Environment overrides config file (lets the Docker build drive it).
+    for key in list(DEFAULTS) + [env_var_for(a) for a in APP_MANIFEST]:
+        if key in os.environ:
+            env[key] = os.environ[key]
+    if args.desktop:
+        env["FASTVM_DE"] = args.desktop
+    if args.preset:
+        env["FASTVM_PRESET"] = args.preset
+    if args.bundle:
+        env["FASTVM_APP_BUNDLE"] = args.bundle
+
+    bundle = resolve_bundle(env, explicit_bundle=args.bundle, desktop=env.get("FASTVM_DE"))
+    groups = build_manifest(env, bundle)
 
     data = {
-        "defaultapps": build_group(
-            [
-                ("FASTVM_APP_WINE", 0),
-                ("FASTVM_APP_CHROME", 1),
-                ("FASTVM_APP_XARCHIVER", 2),
-                ("FASTVM_APP_DISCORD", 3),
-                ("FASTVM_APP_STEAM", 4),
-                ("FASTVM_APP_MINECRAFT", 5),
-            ],
-            env,
-        ),
-        "programming": build_group(
-            [
-                ("FASTVM_PROG_JAVA8", 0),
-                ("FASTVM_PROG_JAVA17", 1),
-                ("FASTVM_PROG_VSCODIUM", 2),
-            ],
-            env,
-        ),
-        "apps": build_group(
-            [
-                ("FASTVM_APP_VLC", 0),
-                ("FASTVM_APP_LIBREOFFICE", 1),
-                ("FASTVM_APP_SYNAPTIC", 2),
-                ("FASTVM_APP_AQEMU", 3),
-                ("FASTVM_APP_TLAUNCHER", 4),
-                ("FASTVM_APP_FLATPAK", 5),
-                ("FASTVM_APP_HEROIC", 6),
-                ("FASTVM_APP_MODRINTH", 7),
-            ],
-            env,
-        ),
+        "defaultapps": groups["defaultapps"],
+        "programming": groups["programming"],
+        "apps": groups["apps"],
         "enablekvm": True,
         "DE": map_desktop(env.get("FASTVM_DE", "XFCE4")),
         "preset": env.get("FASTVM_PRESET", "none"),
+        "bundle": bundle,
         "audio": is_truthy(env.get("FASTVM_AUDIO_ENABLED", "true")),
         "clipboard": is_truthy(env.get("FASTVM_CLIPBOARD_ENABLED", "true")),
         "recording": is_truthy(env.get("FASTVM_RECORDING_ENABLED", "true")),
@@ -172,8 +271,9 @@ def main():
         "dashboard": True,
     }
 
-    output_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    Path(args.output).write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
