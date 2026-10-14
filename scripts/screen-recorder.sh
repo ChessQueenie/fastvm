@@ -54,7 +54,7 @@ case "$vcodec" in
             vcodec="libx264"
             video_args=(-c:v libx264 -b:v "$bitrate" -preset veryfast)
         else
-            video_args=(-vaapi_device "$vaapi_render" -vf format=nv12,hwupload -c:v h264_vaapi -b:v "$bitrate")
+            video_args=(-vaapi_device "$vaapi_render" -vf "format=nv12,hwupload" -c:v h264_vaapi -b:v "$bitrate")
         fi
         ;;
     *)

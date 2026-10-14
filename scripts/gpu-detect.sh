@@ -57,7 +57,8 @@ detect() {
 
     if [[ -n "$render_node" ]]; then
         detected="true"
-        local vf="/sys/class/drm/$(basename "$render_node")/device/vendor"
+        local vf
+        vf="/sys/class/drm/$(basename "$render_node")/device/vendor"
         if [[ -r "$vf" ]]; then
             vendor="$(drm_vendor_name "$(cat "$vf")")"
         elif [[ "$vendor" == "none" ]]; then

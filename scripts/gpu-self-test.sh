@@ -28,7 +28,7 @@ case "$vcodec" in
         render="$(jq -r '.render_node // ""' "$(gpu_json_path)" 2>/dev/null || true)"
         [[ -n "$render" ]] || render="$(ls /dev/dri/renderD* 2>/dev/null | head -n1 || true)"
         [[ -n "$render" ]] || { log_error "VAAPI requested but no render node present"; exit 2; }
-        enc_args=(-vaapi_device "$render" -vf format=nv12,hwupload -c:v h264_vaapi)
+        enc_args=(-vaapi_device "$render" -vf "format=nv12,hwupload" -c:v h264_vaapi)
         ;;
     *) enc_args=(-c:v libx264 -preset veryfast) ;;
 esac
