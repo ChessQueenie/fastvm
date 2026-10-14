@@ -9,15 +9,27 @@
 # run on the host so Docker uses the nvidia runtime.
 services:
   fastvm:
+    # NVIDIA's closed driver has no DRI3, so KasmVNC's -hw3d is skipped (the base
+    # image disables it when nvidia-smi is present). The render node is still
+    # mapped so apps reach the GPU through Zink (OpenGL-over-Vulkan); the session
+    # env for that is set by scripts/gpu-session-env.sh.
+    devices:
+      - /dev/dri:/dev/dri
     environment:
-      # NVENC needs the video capability; compute covers CUDA/ML workloads.
+      # NVENC needs the video capability; compute covers CUDA/ML workloads and
+      # graphics covers Zink/EGL.
       - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all}
-      - NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:-compute,video,utility}
+      - NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:-compute,video,graphics,utility}
       - FASTVM_RECORDING_ENCODER=${FASTVM_RECORDING_ENCODER:-auto}
+      - FASTVM_GPU_HW=${FASTVM_GPU_HW:-true}
+      - DRINODE=${DRINODE:-/dev/dri/renderD128}
+    group_add:
+      - video
+      - render
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
               count: ${FASTVM_GPU_COUNT:-all}
-              capabilities: [gpu, video, compute, utility]
+              capabilities: [gpu, graphics, video, compute, utility]

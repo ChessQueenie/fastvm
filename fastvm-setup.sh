@@ -623,6 +623,15 @@ esac
 # Finalize
 # =============================================================================
 
+# Apply the GPU session environment to every desktop. The base image already
+# passes KasmVNC -hw3d (DRI3) when /dev/dri is mapped; this sources the helper so
+# apps and the window manager also use the GPU. No-op without a GPU.
+GPU_ENV_SOURCE='[ -r /fastvm-scripts/gpu-session-env.sh ] && . /fastvm-scripts/gpu-session-env.sh'
+if ! head -n2 /defaults/startwm.sh | grep -q 'gpu-session-env.sh'; then
+    printf '%s\n\n%s\n' "$GPU_ENV_SOURCE" "$(cat /defaults/startwm.sh)" > /defaults/startwm.sh.new
+    mv /defaults/startwm.sh.new /defaults/startwm.sh
+fi
+
 chmod +x /defaults/startwm.sh
 
 # Clean up start scripts
