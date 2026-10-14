@@ -50,6 +50,26 @@ log_info "Setting up Desktop Environment: $DE_SELECTION"
 
 apt-get update -qq
 
+# GPU userspace drivers (best-effort). These provide VA-API hardware decode/encode
+# for Intel and AMD GPUs via /dev/dri. NVIDIA encoding uses the driver injected by
+# the NVIDIA Container Toolkit and is not installed here. Failures are non-fatal
+# because most FastVM hosts (Codespaces, low-memory VPS) have no GPU at all.
+if [[ "${FASTVM_ENABLE_GPU_DRIVERS:-true}" == "true" ]]; then
+    log_info "Installing GPU userspace drivers (VA-API/Mesa/Vulkan)..."
+    install_packages \
+        mesa-va-drivers \
+        mesa-vulkan-drivers \
+        intel-media-va-driver-non-free \
+        i965-va-driver \
+        libva-drm2 \
+        libva2 \
+        vainfo \
+        vdpau-va-driver \
+        mesa-utils \
+        clinfo \
+        || log_warn "Some GPU driver packages were unavailable; continuing without them"
+fi
+
 case "$DE_UPPER" in
     "KDE"|"KDE PLASMA"|"KDE PLASMA (HEAVY)")
         log_info "Installing KDE Plasma..."
@@ -192,12 +212,397 @@ case "$DE_UPPER" in
         cp /startwm-budgie.sh /defaults/startwm.sh
         ;;
 
+    "MATE"|"MATE DESKTOP")
+        log_info "Installing MATE Desktop..."
+        install_packages \
+            mate-desktop-environment \
+            mate-desktop-environment-extras \
+            mate-terminal \
+            mate-tweak \
+            firefox
+        # MATE ships an xscreensaver autostart that fights the browser session.
+        rm -f /etc/xdg/autostart/xscreensaver.desktop
+        cp /startwm-mate.sh /defaults/startwm.sh
+        ;;
+
+    "LXDE"|"LXDE (LIGHTWEIGHT)")
+        log_info "Installing LXDE..."
+        install_packages \
+            lxde-core \
+            lxterminal \
+            firefox
+        # LXDE is the classic ultra-light GTK2 desktop.
+        rm -f /etc/xdg/autostart/xscreensaver.desktop
+        cp /startwm-lxde.sh /defaults/startwm.sh
+        ;;
+
+    "FLUXBOX"|"FLUXBOX (VERY LIGHTWEIGHT)")
+        log_info "Installing Fluxbox..."
+        install_packages \
+            fluxbox \
+            xterm \
+            firefox
+        cp /startwm-fluxbox.sh /defaults/startwm.sh
+        ;;
+
+    "UNITY")
+        log_info "Installing Unity..."
+        install_packages \
+            ubuntu-unity-desktop \
+            firefox
+        # Unity pulls in LightDM, but KasmVNC owns session startup.
+        cp /startwm-unity.sh /defaults/startwm.sh
+        ;;
+
+    "UBUNTU STUDIO"|"UBUNTUSTUDIO"|"UBUNTU-STUDIO")
+        log_info "Installing Ubuntu Studio desktop flavor (KDE Plasma based)..."
+        install_packages \
+            ubuntustudio-desktop \
+            firefox
+        # Ubuntu Studio is a KDE Plasma flavor; reuse the KDE session launcher.
+        cp /startwm-kde.sh /defaults/startwm.sh
+        ;;
+
+    "ENLIGHTENMENT"|"ENLIGHTENMENT (EYE CANDY)")
+        log_info "Installing Enlightenment..."
+        install_packages \
+            enlightenment \
+            terminology \
+            firefox
+        # Enlightenment is a lightweight compositing desktop; dbus-launch is
+        # used by the session launcher so make sure it is present.
+        install_packages dbus-x11
+        cp /startwm-enlightenment.sh /defaults/startwm.sh
+        ;;
+
+    "ICEWM"|"ICEWM (VERY LIGHTWEIGHT)")
+        log_info "Installing IceWM..."
+        install_packages \
+            icewm \
+            xterm \
+            firefox
+        cp /startwm-icewm.sh /defaults/startwm.sh
+        ;;
+
+    "AWESOME"|"AWESOME (TILING)")
+        log_info "Installing awesome WM..."
+        install_packages \
+            awesome \
+            awesome-extra \
+            rxvt-unicode \
+            firefox
+        # Register urxvt as the terminal for menus/app launchers that expect one.
+        update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/bin/urxvt 40 || true
+        update-alternatives --set x-terminal-emulator /usr/bin/urxvt || true
+        cp /startwm-awesome.sh /defaults/startwm.sh
+        ;;
+
+    "BSPWM"|"BSPWM (TILING)")
+        log_info "Installing bspwm tiling window manager..."
+        install_packages \
+            bspwm \
+            sxhkd \
+            dmenu \
+            xterm \
+            firefox
+        # Seed the default bspwm/sxhkd configs so the first session is usable.
+        cp /etc/xdg/bspwm/bspwmrc /defaults/bspwmrc 2>/dev/null || true
+        cp /etc/xdg/sxhkd/sxhkdrc /defaults/sxhkdrc 2>/dev/null || true
+        cp /startwm-bspwm.sh /defaults/startwm.sh
+        ;;
+
+    "HERBSTLUFTWM"|"HERBSTLUFTWM (TILING)"|"HLWM")
+        log_info "Installing herbstluftwm tiling window manager..."
+        install_packages \
+            herbstluftwm \
+            dmenu \
+            xterm \
+            firefox
+        # Seed the packaged autostart so the first session has panels/hotkeys.
+        cp /startwm-herbstluftwm.sh /defaults/startwm.sh
+        ;;
+
+    "JWM"|"JWM (VERY LIGHTWEIGHT)"|"JOE'S WINDOW MANAGER")
+        log_info "Installing JWM (Joe's Window Manager)..."
+        install_packages \
+            jwm \
+            xterm \
+            firefox
+        # JWM ships a system config; the session launcher copies it per-user.
+        cp /startwm-jwm.sh /defaults/startwm.sh
+        ;;
+
+    "FVWM"|"FVWM (CLASSIC)"|"FVWM2"|"F? VIRTUAL WINDOW MANAGER")
+        log_info "Installing FVWM (F? Virtual Window Manager)..."
+        install_packages \
+            fvwm \
+            xterm \
+            firefox
+        # FVWM ships a full default config; the session launcher seeds it per-user.
+        cp /startwm-fvwm.sh /defaults/startwm.sh
+        ;;
+
+    "XMONAD"|"XMONAD (TILING)"|"XMONAD (HASKELL TILING)")
+        log_info "Installing XMonad tiling window manager..."
+        install_packages \
+            xmonad \
+            xmobar \
+            suckless-tools \
+            xterm \
+            firefox
+        # Register xmonad with the x-window-manager alternative so bare X
+        # sessions (e.g. startx without a WM argument) resolve it correctly.
+        if command -v update-alternatives >/dev/null 2>&1; then
+            update-alternatives --install /usr/bin/x-window-manager \
+                x-window-manager /usr/bin/xmonad 60 >/dev/null 2>&1 || true
+        fi
+        # XMonad has no session manager; the launcher starts it with its
+        # compiled-in default configuration and runs xmobar standalone.
+        cp /startwm-xmonad.sh /defaults/startwm.sh
+        ;;
+
+    "SUGAR"|"SUGAR DESKTOP"|"SUGAR (OLPC)"|"SUGAR (EDUCATION)")
+        log_info "Installing the Sugar desktop environment..."
+        # `sugar` is only a virtual package in jammy; sugar-session is the
+        # real package and already Provides: sugar and x-session-manager.
+        install_packages \
+            sugar-session \
+            dbus-x11 \
+            firefox
+        # Sugar is an X session that expects a session bus.
+        cp /startwm-sugar.sh /defaults/startwm.sh
+        ;;
+
+    "GNOME-FLASHBACK"|"GNOME FLASHBACK"|"FLASHBACK"|"GNOME FLASHBACK (CLASSIC)")
+        log_info "Installing GNOME Flashback (classic panel) desktop..."
+        install_packages \
+            gnome-session-flashback \
+            gnome-flashback \
+            gnome-panel \
+            gnome-terminal \
+            metacity \
+            dbus-x11 \
+            firefox
+        # Flashback is a GNOME session and reads dconf/gsettings.
+        cp /startwm-gnome-flashback.sh /defaults/startwm.sh
+        ;;
+
+    "WMAKER"|"WINDOW MAKER"|"WINDOWMAKER"|"WINDOW MAKER (MINIMAL)")
+        log_info "Installing Window Maker..."
+        install_packages \
+            wmaker \
+            xterm \
+            firefox
+        cp /startwm-wmaker.sh /defaults/startwm.sh
+        ;;
+
+    "UKUI"|"UKUI DESKTOP")
+        log_info "Installing UKUI Desktop (Ubuntu Kylin desktop)..."
+        # ukui-settings-daemon's postinst launches a Qt GUI helper (save-param)
+        # whenever DISPLAY is set, which aborts in the headless build. Blank
+        # DISPLAY for the install so dpkg can configure the package, then
+        # restore it so later layers are unaffected.
+        export DISPLAY=""
+        install_packages \
+            ukui-desktop-environment \
+            ukui-session-manager \
+            ukui-panel \
+            ukui-menu \
+            peony \
+            dbus-x11 \
+            firefox
+        unset DISPLAY
+        cp /startwm-ukui.sh /defaults/startwm.sh
+        ;;
+
     "SINGLEAPP")
         # Single-app mode: minimal openbox, no full desktop environment
         # The specific app is installed later via installapps-parallel.sh
         log_info "Single-app mode — installing openbox..."
         install_packages openbox
         cp /startwm-singleapp.sh /defaults/startwm.sh
+        ;;
+
+    "FASTVM-OS"|"FASTVM OS")
+        # FastVM OS uses its own lightweight shell instead of XFCE.
+        log_info "Installing the FastVM OS desktop shell..."
+        install_packages \
+            openbox \
+            tint2 \
+            rofi \
+            xterm \
+            firefox
+        cp /startwm-fastvm-os.sh /defaults/startwm.sh
+        ;;
+
+    "DWM"|"DWM (TILING)"|"DWM (SUCKLESS)")
+        log_info "Installing dwm (dynamic window manager)..."
+        # dwm is compiled to launch `st` (stterm package) and `dmenu`; install
+        # both so its default keybindings work out of the box.
+        install_packages \
+            dwm \
+            stterm \
+            dmenu \
+            x11-xserver-utils \
+            firefox
+        cp /startwm-dwm.sh /defaults/startwm.sh
+        ;;
+
+    "RATPOISON"|"RATPOISON (TILING)")
+        log_info "Installing ratpoison tiling window manager..."
+        install_packages \
+            ratpoison \
+            xterm \
+            firefox
+        cp /startwm-ratpoison.sh /defaults/startwm.sh
+        ;;
+
+    "BLACKBOX"|"BLACKBOX (MINIMAL)"|"BLACKBOX (VERY LIGHTWEIGHT)")
+        log_info "Installing Blackbox minimal window manager..."
+        install_packages \
+            blackbox \
+            xterm \
+            firefox
+        cp /startwm-blackbox.sh /defaults/startwm.sh
+        ;;
+
+    "POP-OS"|"POP OS"|"POPOS"|"POP!_OS"|"POP OS (GNOME)")
+        log_info "Installing the Pop!_OS (System76) GNOME desktop..."
+        # Pop!_OS is a GNOME Shell distribution; reuse the GNOME stack with the
+        # Pop GTK/icon themes and the pop-os session launcher.
+        install_packages \
+            gnome-shell \
+            gnome-session \
+            gnome-terminal \
+            dbus-x11 \
+            pop-gtk-theme \
+            pop-icon-theme \
+            firefox
+        cp /startwm-pop-os.sh /defaults/startwm.sh
+        ;;
+
+    "PEKWM"|"PEKWM (VERY LIGHTWEIGHT)"|"PEKWM (LIGHTWEIGHT)")
+        log_info "Installing PekWM..."
+        install_packages \
+            pekwm \
+            xterm \
+            firefox
+        # PekWM ships its full default config under /etc/pekwm; the session
+        # launcher seeds it per-user on first run.
+        cp /startwm-pekwm.sh /defaults/startwm.sh
+        ;;
+
+    "SPECTRWM"|"SPECTRWM (TILING)"|"SPECTRWM (DYNAMIC TILING)")
+        log_info "Installing spectrwm tiling window manager..."
+        install_packages \
+            spectrwm \
+            xterm \
+            firefox
+        # spectrwm reads /etc/spectrwm.conf; the launcher installs a per-user copy.
+        cp /startwm-spectrwm.sh /defaults/startwm.sh
+        ;;
+
+    "SAWFISH"|"SAWFISH (SCRIPTABLE)"|"SAWFISH (LISP)")
+        log_info "Installing Sawfish..."
+        install_packages \
+            sawfish \
+            xterm \
+            firefox
+        # Sawfish is a Lisp-scriptable reparenting window manager; its packaged
+        # site-init provides the default theme, bindings, and menu.
+        cp /startwm-sawfish.sh /defaults/startwm.sh
+        ;;
+
+    "OPENBOX"|"OPENBOX (MINIMAL)"|"OPENBOX (VERY LIGHTWEIGHT)")
+        log_info "Installing Openbox..."
+        # Openbox is a standalone stacking window manager with no bundled
+        # desktop shell; add a panel/menu/task switcher via tint2 and rofi.
+        install_packages \
+            openbox \
+            obconf \
+            tint2 \
+            rofi \
+            xterm \
+            x11-xserver-utils \
+            firefox
+        cp /startwm-openbox.sh /defaults/startwm.sh
+        ;;
+
+    "AFTERSTEP"|"AFTERSTEP (LIGHTWEIGHT)"|"AFTERSTEP (NEXTSTEP)")
+        log_info "Installing AfterStep..."
+        install_packages \
+            afterstep \
+            xterm \
+            x11-xserver-utils \
+            firefox
+        # AfterStep ships its default configuration under /usr/share/afterstep;
+        # the session launcher seeds it per-user on first run.
+        cp /startwm-afterstep.sh /defaults/startwm.sh
+        ;;
+
+    "CTWM"|"CTWM (LIGHTWEIGHT)"|"CTWM (CLASSIC)")
+        log_info "Installing ctwm..."
+        install_packages \
+            ctwm \
+            xterm \
+            x11-xserver-utils \
+            firefox
+        # ctwm reads /etc/X11/ctwm/system.ctwmrc; the launcher installs a
+        # per-user copy so the window menu works out of the box.
+        cp /startwm-ctwm.sh /defaults/startwm.sh
+        ;;
+
+    "TWM"|"TWM (CLASSIC)"|"TWM (MINIMAL)")
+        log_info "Installing twm..."
+        install_packages \
+            twm \
+            xterm \
+            x11-xserver-utils \
+            firefox
+        # twm reads /etc/X11/twm/system.twmrc-menu; the launcher installs a
+        # per-user copy so the root menu works out of the box.
+        cp /startwm-twm.sh /defaults/startwm.sh
+        ;;
+
+    "NIXOS"|"NIX"|"NIXOS (OPENBOX)")
+        log_info "Installing the NixOS flavor desktop..."
+        # Additive distro flavor: the Ubuntu 22.04 base and KasmVNC stack are
+        # unchanged. This installs the Nix package manager (Ubuntu's nix-bin)
+        # plus a minimal Openbox shell, and pairs with FASTVM_OS_FLAVOR=nixos.
+        install_packages \
+            openbox \
+            obconf \
+            tint2 \
+            rofi \
+            xterm \
+            x11-xserver-utils \
+            nix-bin \
+            firefox
+        # Enable the Nix daemon profile path without requiring nix-daemon.
+        if command -v nix >/dev/null 2>&1; then
+            mkdir -p /nix/var/nix/profiles/default/etc/profile.d
+            ln -sf /etc/profile.d/nix.sh \
+                /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh 2>/dev/null || true
+        fi
+        cp /startwm-nixos.sh /defaults/startwm.sh
+        ;;
+
+    "PEAROS"|"PEAR OS"|"PEAR-OS"|"PEAROS (KDE)")
+        log_info "Installing the pearOS (macOS-inspired KDE Plasma) desktop..."
+        # pearOS is an Arch-based distribution that customises KDE Plasma to look
+        # like macOS. Its own packages are not in the Ubuntu 22.04 archive, so
+        # this reuses the available KDE Plasma stack plus macOS-like theming and
+        # pairs with FASTVM_OS_FLAVOR=pearos.
+        install_packages \
+            plasma-desktop \
+            plasma-workspace \
+            kwin-x11 \
+            systemsettings \
+            kde-config-gtk-style \
+            kde-style-breeze \
+            papirus-icon-theme \
+            firefox
+        cp /startwm-pearos.sh /defaults/startwm.sh
         ;;
 
     *)
@@ -218,10 +623,32 @@ esac
 # Finalize
 # =============================================================================
 
+# Apply the GPU session environment to every desktop. The base image already
+# passes KasmVNC -hw3d (DRI3) when /dev/dri is mapped; this sources the helper so
+# apps and the window manager also use the GPU. No-op without a GPU.
+GPU_ENV_SOURCE='[ -r /fastvm-scripts/gpu-session-env.sh ] && . /fastvm-scripts/gpu-session-env.sh'
+if ! head -n2 /defaults/startwm.sh | grep -q 'gpu-session-env.sh'; then
+    printf '%s\n\n%s\n' "$GPU_ENV_SOURCE" "$(cat /defaults/startwm.sh)" > /defaults/startwm.sh.new
+    mv /defaults/startwm.sh.new /defaults/startwm.sh
+fi
+
 chmod +x /defaults/startwm.sh
 
 # Clean up start scripts
 rm -f /startwm-kde.sh /startwm-i3.sh /startwm-xfce.sh /startwm-gnome.sh \
-      /startwm-cinnamon.sh /startwm-lxqt.sh /startwm-budgie.sh /startwm-singleapp.sh 2>/dev/null || true
+      /startwm-cinnamon.sh /startwm-lxqt.sh /startwm-budgie.sh /startwm-singleapp.sh \
+      /startwm-mate.sh /startwm-lxde.sh /startwm-fluxbox.sh /startwm-unity.sh \
+      /startwm-enlightenment.sh /startwm-icewm.sh /startwm-awesome.sh /startwm-ukui.sh \
+      /startwm-bspwm.sh /startwm-herbstluftwm.sh /startwm-jwm.sh \
+      /startwm-fvwm.sh \
+      /startwm-gnome-flashback.sh /startwm-wmaker.sh \
+      /startwm-xmonad.sh /startwm-sugar.sh \
+      /startwm-dwm.sh /startwm-ratpoison.sh /startwm-blackbox.sh \
+      /startwm-pop-os.sh \
+      /startwm-pekwm.sh /startwm-spectrwm.sh /startwm-sawfish.sh \
+      /startwm-openbox.sh /startwm-afterstep.sh \
+      /startwm-ctwm.sh /startwm-twm.sh /startwm-nixos.sh \
+      /startwm-pearos.sh \
+      2>/dev/null || true
 
 log_info "Desktop Environment setup complete!"

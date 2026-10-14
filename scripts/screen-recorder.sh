@@ -6,6 +6,10 @@
 #     screen-recorder.sh stop
 #     screen-recorder.sh status
 #     screen-recorder.sh list
+#
+# Encoding is hardware-accelerated when a GPU is available. Set
+# FASTVM_RECORDING_ENCODER=auto (default) to use the detected GPU, or force one
+# of: nvenc, vaapi, qsv, software.
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -20,12 +24,51 @@ ensure_dir "${FASTVM_LOG_DIR}"
 format="${FASTVM_RECORDING_FORMAT:-mp4}"
 bitrate="${FASTVM_RECORDING_BITRATE:-5M}"
 fps="${FASTVM_RECORDING_FRAMERATE:-30}"
-codec="${FASTVM_RECORDING_CODEC:-h264}"
+encoder_choice="${FASTVM_RECORDING_ENCODER:-auto}"
 
-case "$codec" in
-    hevc)  vcodec="libx265" ;;
-    vp9)   vcodec="libvpx-vp9"; format="webm" ;;
-    h264|*) vcodec="libx264" ;;
+# Hardware encoders emit H.264 only; a container-friendly muxer is required.
+vcodec="$(resolve_encoder)"
+
+# A compute-only accelerator (e.g. AMD Instinct) has no usable VA-API device;
+# record on the CPU rather than failing.
+if [[ "$vcodec" == "h264_vaapi" ]] && gpu_is_compute_only; then
+    log_warn "Compute-only GPU: VA-API unavailable; using software (libx264)"
+    vcodec="libx264"
+fi
+
+if [[ "$vcodec" != "libx264" ]]; then
+    case "$format" in
+        mp4|mkv) ;;
+        *) format="mp4" ;;
+    esac
+fi
+
+# Build the -c:v argument list (hardware encoders need an explicit input format
+# and, for VAAPI, an uploaded hwframe).
+video_args=()
+case "$vcodec" in
+    h264_nvenc)
+        video_args=(-c:v h264_nvenc -b:v "$bitrate" -preset p4)
+        ;;
+    h264_qsv)
+        video_args=(-c:v h264_qsv -b:v "$bitrate")
+        ;;
+    h264_vaapi)
+        vaapi_render=""
+        vaapi_render="$(jq -r '.render_node // ""' "$(gpu_json_path)" 2>/dev/null || true)"
+        [[ -n "$vaapi_render" ]] || vaapi_render="$(ls /dev/dri/renderD* 2>/dev/null | head -n1 || true)"
+        if [[ -z "$vaapi_render" ]]; then
+            log_warn "VAAPI selected but no render node found; falling back to software"
+            vcodec="libx264"
+            video_args=(-c:v libx264 -b:v "$bitrate" -preset veryfast)
+        else
+            video_args=(-vaapi_device "$vaapi_render" -vf "format=nv12,hwupload" -c:v h264_vaapi -b:v "$bitrate")
+        fi
+        ;;
+    *)
+        vcodec="libx264"
+        video_args=(-c:v libx264 -b:v "$bitrate" -preset veryfast)
+        ;;
 esac
 
 start_recording() {
@@ -52,14 +95,14 @@ start_recording() {
     nohup ffmpeg -y \
         -f x11grab -framerate "$fps" -video_size "$resolution" -i "$display" \
         -f pulse -i default \
-        -c:v "$vcodec" -b:v "$bitrate" -preset veryfast \
+        "${video_args[@]}" \
         -c:a aac -b:a 160k \
         -movflags +faststart \
         "$outfile" \
         > "${FASTVM_LOG_DIR}/recorder.log" 2>&1 &
 
     echo $! > "$PIDFILE"
-    log_success "Recording started (pid $(cat "$PIDFILE"))"
+    log_success "Recording started (pid $(cat "$PIDFILE"), encoder ${vcodec})"
 }
 
 stop_recording() {
@@ -80,6 +123,7 @@ stop_recording() {
 }
 
 status_recording() {
+    echo "encoder=${vcodec} requested=${encoder_choice}"
     if [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
         echo "recording"
         cat "$NAMEFILE" 2>/dev/null || true

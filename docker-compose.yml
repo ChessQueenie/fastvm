@@ -6,6 +6,26 @@ services:
       args:
         - BUILD_DATE=${BUILD_DATE:-}
         - VERSION=${VERSION:-latest}
+        - FASTVM_DE=${FASTVM_DE:-XFCE4}
+        - FASTVM_PRESET=${FASTVM_PRESET:-none}
+        - FASTVM_APP_BUNDLE=${FASTVM_APP_BUNDLE:-}
+        - FASTVM_APP_WINE=${FASTVM_APP_WINE:-false}
+        - FASTVM_APP_CHROME=${FASTVM_APP_CHROME:-false}
+        - FASTVM_APP_XARCHIVER=${FASTVM_APP_XARCHIVER:-false}
+        - FASTVM_APP_DISCORD=${FASTVM_APP_DISCORD:-false}
+        - FASTVM_APP_STEAM=${FASTVM_APP_STEAM:-false}
+        - FASTVM_APP_MINECRAFT=${FASTVM_APP_MINECRAFT:-false}
+        - FASTVM_APP_VLC=${FASTVM_APP_VLC:-false}
+        - FASTVM_APP_LIBREOFFICE=${FASTVM_APP_LIBREOFFICE:-false}
+        - FASTVM_APP_SYNAPTIC=${FASTVM_APP_SYNAPTIC:-false}
+        - FASTVM_APP_AQEMU=${FASTVM_APP_AQEMU:-false}
+        - FASTVM_APP_TLAUNCHER=${FASTVM_APP_TLAUNCHER:-false}
+        - FASTVM_APP_FLATPAK=${FASTVM_APP_FLATPAK:-false}
+        - FASTVM_APP_HEROIC=${FASTVM_APP_HEROIC:-false}
+        - FASTVM_APP_MODRINTH=${FASTVM_APP_MODRINTH:-false}
+        - FASTVM_PROG_JAVA8=${FASTVM_PROG_JAVA8:-false}
+        - FASTVM_PROG_JAVA17=${FASTVM_PROG_JAVA17:-false}
+        - FASTVM_PROG_VSCODIUM=${FASTVM_PROG_VSCODIUM:-false}
       cache_from:
         - fastvm:latest
     container_name: ${FASTVM_NAME:-FastVM}

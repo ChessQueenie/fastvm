@@ -11,6 +11,22 @@ if [[ -x /fastvm-scripts/clipboard-daemon.sh ]]; then
     /fastvm-scripts/clipboard-daemon.sh >/dev/null 2>&1 &
 fi
 
+# Audio input readiness. The base image pipes the browser microphone into
+# PulseAudio as a `virtmic` source (svc-kclient); log its state so a Discord or
+# other voice app has a clear signal instead of failing silently.
+(
+    for _ in $(seq 1 15); do
+        pactl info >/dev/null 2>&1 && break
+        sleep 1
+    done
+    source_name="$(pactl get-default-source 2>/dev/null || true)"
+    if [[ -n "$source_name" && "$source_name" != "@NONE@" ]]; then
+        echo "[fastvm] audio input ready: default source=${source_name}"
+    else
+        echo "[fastvm] WARN: no PulseAudio input source; microphone may be unavailable"
+    fi
+) >/dev/null 2>&1 &
+
 # Write openbox autostart to launch the target app fullscreen
 AUTOSTART_DIR="/config/.config/openbox"
 mkdir -p "$AUTOSTART_DIR"

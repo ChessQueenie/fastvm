@@ -38,4 +38,12 @@ chown abc:abc /config/backups /config/recordings /config/.fastvm /var/log/fastvm
     fi
 } || true
 
+# 4. GPU detection + encoder self-test (best-effort — never fatal)
+if [[ -x /fastvm-scripts/gpu-detect.sh ]]; then
+    FASTVM_DATA_ROOT=/config /fastvm-scripts/gpu-detect.sh detect >/dev/null 2>&1 || true
+fi
+if [[ "${FASTVM_GPU_SELFTEST:-true}" == "true" ]] && [[ -x /fastvm-scripts/gpu-self-test.sh ]]; then
+    FASTVM_DATA_ROOT=/config /fastvm-scripts/gpu-self-test.sh >/dev/null 2>&1 || true
+fi
+
 exit 0

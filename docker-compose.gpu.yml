@@ -1,0 +1,32 @@
+# FastVM GPU overlay (Intel / AMD via VA-API).
+# Maps the DRM render nodes into the container so ffmpeg can use VA-API/QSV
+# hardware encode and apps can reach the GPU. Use with the base compose file:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+#
+# For NVIDIA, layer docker-compose.gpu-nvidia.yml on top (requires the NVIDIA
+# Container Toolkit on the host). Do not set FASTVM_PRIVILEGED for GPU access.
+#
+# Compute-only accelerators (e.g. AMD Instinct MI300X) have no graphics engine.
+# FastVM detects these and keeps the desktop on CPU rasterization, but you should
+# also uncomment `DISABLE_DRI=1` below so KasmVNC does not attempt DRI3 at all.
+# On a graphics GPU (Intel/Radeon) leave it unset to get GPU rasterization.
+services:
+  fastvm:
+    devices:
+      - /dev/dri:/dev/dri
+    environment:
+      - FASTVM_RECORDING_ENCODER=${FASTVM_RECORDING_ENCODER:-auto}
+      - FASTVM_ENABLE_GPU_DRIVERS=${FASTVM_ENABLE_GPU_DRIVERS:-true}
+      # GPU-rasterized desktop sessions (KasmVNC DRI3 + per-session userspace
+      # env). Disables the compositor on XFCE/KDE/MATE; see docs/gpu.md. A no-op
+      # on compute-only accelerators, which are detected and skipped.
+      - FASTVM_GPU_HW=${FASTVM_GPU_HW:-true}
+      - FASTVM_GPU_KEEP_COMPOSITING=${FASTVM_GPU_KEEP_COMPOSITING:-false}
+      # Compute-only accelerator? Uncomment to stop KasmVNC from using DRI3:
+      # - DISABLE_DRI=1
+      # Pick a specific DRM render node on multi-GPU hosts (default renderD128).
+      - DRINODE=${DRINODE:-/dev/dri/renderD128}
+    group_add:
+      - video
+      - render

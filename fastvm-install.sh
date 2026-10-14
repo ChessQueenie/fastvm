@@ -151,6 +151,18 @@ load_configuration() {
         declare -x "$var"
     done
 
+    # Select the compose file set. FASTVM_GPU=nvidia layers the NVIDIA device
+    # reservation; FASTVM_GPU=true|intel|amd maps /dev/dri for VA-API/QSV.
+    COMPOSE_FILES=(-f "${SCRIPT_DIR}/docker-compose.yml")
+    case "${FASTVM_GPU:-false}" in
+        nvidia)
+            COMPOSE_FILES+=(-f "${SCRIPT_DIR}/docker-compose.gpu.yml" -f "${SCRIPT_DIR}/docker-compose.gpu-nvidia.yml")
+            ;;
+        true|intel|amd)
+            COMPOSE_FILES+=(-f "${SCRIPT_DIR}/docker-compose.gpu.yml")
+            ;;
+    esac
+
     echo ""
     echo -e "  ${BOLD}Configuration summary${NC}"
     echo -e "  ${DIM}────────────────────────────────────────${NC}"
@@ -161,6 +173,8 @@ load_configuration() {
     printf  "  %-30s %s\n" "Dashboard port:" "${FASTVM_DASHBOARD_HOST_PORT:-3001}"
     printf  "  %-30s %s\n" "CPU limit:"      "${FASTVM_CPU_LIMIT:-unlimited}"
     printf  "  %-30s %s\n" "Memory limit:"   "${FASTVM_MEMORY_LIMIT:-unlimited}"
+    printf  "  %-30s %s\n" "GPU:"            "${FASTVM_GPU:-false}"
+    printf  "  %-30s %s\n" "Encoder:"        "${FASTVM_RECORDING_ENCODER:-auto}"
     printf  "  %-30s %s\n" "Audio:"          "${FASTVM_AUDIO_ENABLED:-true}"
     printf  "  %-30s %s\n" "Clipboard sync:" "${FASTVM_CLIPBOARD_ENABLED:-true}"
     printf  "  %-30s %s\n" "Screen recording:" "${FASTVM_RECORDING_ENABLED:-true}"
@@ -187,6 +201,20 @@ prepare_directories() {
 }
 
 # =============================================================================
+# Build config sync
+# =============================================================================
+generate_options_json() {
+    log_step "Syncing app selection with config.env"
+    local render_script="${SCRIPT_DIR}/scripts/render-options-json.py"
+    if [[ -f "$render_script" ]]; then
+        python3 "$render_script" "${CONFIG_FILE}" "${SCRIPT_DIR}/options.json"
+        log_success "options.json generated from config.env"
+    else
+        log_warn "No options generator found at $render_script"
+    fi
+}
+
+# =============================================================================
 # Build
 # =============================================================================
 build_image() {
@@ -197,7 +225,7 @@ build_image() {
     export BUILD_DATE
     export VERSION="${VERSION}"
 
-    if ! $DOCKER_COMPOSE -f "${SCRIPT_DIR}/docker-compose.yml" build --parallel; then
+    if ! $DOCKER_COMPOSE "${COMPOSE_FILES[@]}" build --parallel; then
         log_error "Docker build failed"
         exit 1
     fi
@@ -209,9 +237,9 @@ build_image() {
 # =============================================================================
 start_fastvm() {
     log_step "Starting FastVM"
-    $DOCKER_COMPOSE -f "${SCRIPT_DIR}/docker-compose.yml" down 2>/dev/null || true
+    $DOCKER_COMPOSE "${COMPOSE_FILES[@]}" down 2>/dev/null || true
 
-    if ! $DOCKER_COMPOSE -f "${SCRIPT_DIR}/docker-compose.yml" up -d; then
+    if ! $DOCKER_COMPOSE "${COMPOSE_FILES[@]}" up -d; then
         log_error "Failed to start FastVM"
         exit 1
     fi
@@ -291,6 +319,7 @@ main() {
     show_banner
     check_prerequisites
     load_configuration
+    generate_options_json
     prepare_directories
     build_image
     start_fastvm

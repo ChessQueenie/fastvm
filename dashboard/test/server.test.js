@@ -15,9 +15,11 @@ process.env.FASTVM_SCRIPTS_DIR = path.join(__dirname, '..');
 
 const server = require('../server');
 
-function request(method, url, body) {
+function request(method, url, body, token) {
     return new Promise((resolve, reject) => {
-        const req = http.request(`http://127.0.0.1:${server.address().port}${url}`, { method, headers: { 'Content-Type': 'application/json' } }, (res) => {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers.Authorization = `Bearer ${token}`;
+        const req = http.request(`http://127.0.0.1:${server.address().port}${url}`, { method, headers }, (res) => {
             let data = '';
             res.on('data', (chunk) => { data += chunk; });
             res.on('end', () => resolve({ status: res.statusCode, body: JSON.parse(data) }));
@@ -45,6 +47,54 @@ test('login accepts valid token', async () => {
     const result = await request('POST', '/api/login', { token: 'test-token' });
     assert.equal(result.status, 200);
     assert.equal(result.body.ok, true);
+});
+
+test('system update writes a durable host action request', async () => {
+    const result = await request('POST', '/api/system/update', {}, 'test-token');
+    assert.equal(result.status, 202);
+    assert.equal(result.body.action.type, 'update');
+
+    const status = await request('GET', '/api/system/status', undefined, 'test-token');
+    assert.equal(status.status, 200);
+    assert.equal(status.body.pending_action.type, 'update');
+    assert.equal(JSON.parse(fs.readFileSync(path.join(dataRoot, '.fastvm', 'system-action.json'), 'utf8')).type, 'update');
+});
+
+test('gpu endpoints report detected capabilities', async () => {
+    fs.mkdirSync(path.join(dataRoot, '.fastvm'), { recursive: true });
+    fs.writeFileSync(
+        path.join(dataRoot, '.fastvm', 'gpu.json'),
+        JSON.stringify({ detected: true, vendor: 'intel', recommended_encoder: 'vaapi', encoders: { h264_vaapi: true } }),
+    );
+
+    const status = await request('GET', '/api/gpu/status', undefined, 'test-token');
+    assert.equal(status.status, 200);
+    assert.equal(status.body.gpu.detected, true);
+    assert.equal(status.body.gpu.vendor, 'intel');
+
+    const metrics = await request('GET', '/api/gpu/metrics', undefined, 'test-token');
+    assert.equal(metrics.status, 200);
+    assert.equal(metrics.body.detected, true);
+    assert.equal(metrics.body.recommended_encoder, 'vaapi');
+    assert.equal(metrics.body.compute_only, false);
+
+    const system = await request('GET', '/api/system/status', undefined, 'test-token');
+    assert.equal(system.status, 200);
+    assert.equal(system.body.gpu.detected, true);
+});
+
+test('gpu endpoints flag compute-only accelerators', async () => {
+    fs.mkdirSync(path.join(dataRoot, '.fastvm'), { recursive: true });
+    fs.writeFileSync(
+        path.join(dataRoot, '.fastvm', 'gpu.json'),
+        JSON.stringify({ detected: true, vendor: 'amd', compute_only: true, has_display: false, recommended_encoder: 'software', encoders: {} }),
+    );
+
+    const metrics = await request('GET', '/api/gpu/metrics', undefined, 'test-token');
+    assert.equal(metrics.status, 200);
+    assert.equal(metrics.body.vendor, 'amd');
+    assert.equal(metrics.body.compute_only, true);
+    assert.equal(metrics.body.recommended_encoder, 'software');
 });
 
 test.after(() => server.close());
