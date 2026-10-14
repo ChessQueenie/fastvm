@@ -81,6 +81,47 @@ nvidia-smi
 ffmpeg -hide_banner -encoders | grep nvenc
 ```
 
+## Compute-only accelerators (AMD Instinct / CDNA)
+
+Some GPUs do compute but have **no graphics engine** — for example the AMD
+Instinct **MI300X** (CDNA 3). These expose a DRM *render* node (`/dev/dri/renderD*`)
+but no KMS *card* node, no display output, and no OpenGL/Vulkan pipeline
+(`radeonsi`/RADV do not support CDNA). Their video blocks are reachable through
+ROCm (`rocDecode`), not VA-API.
+
+On such a host:
+
+- **Games and GPU desktop rasterization are not possible** — there is no graphics
+  pipeline to use. The desktop renders on the CPU (`llvmpipe`).
+- `/dev/dri` and `/dev/kfd` are still worth mapping for **ROCm compute**
+  (PyTorch/HIP/llama.cpp).
+- KasmVNC must **not** try DRI3, and the VA-API path is unusable.
+
+FastVM detects this case automatically: `scripts/gpu-detect.sh` records
+`"compute_only": true` in `gpu.json`, recommends the **software** encoder, and the
+session helper skips DRI3/compositing. To also stop KasmVNC from attempting DRI3
+at all, set `DISABLE_DRI=1` (the base image skips `-hw3d` when it is set):
+
+```bash
+docker run -d --name fastvm-mi300x \
+  --device=/dev/kfd --device=/dev/dri \
+  --group-add video --group-add render \
+  -e DISABLE_DRI=1 -e FASTVM_GPU_HW=false -e FASTVM_RECORDING_ENCODER=software \
+  -p 3000:3000 -p 3001:8099 \
+  ghcr.io/cloudcompile/fastvm:xfce4-gaming-latest
+```
+
+Verify:
+
+```text
+docker exec fastvm-mi300x ls -l /dev/dri /dev/kfd          # compute nodes present
+docker exec -e DISPLAY=:1 fastvm-mi300x glxinfo -B | grep -i renderer   # llvmpipe (expected)
+docker exec fastvm-mi300x rocm-smi                          # once ROCm userspace is installed
+```
+
+> NVIDIA compute accelerators (A100/H100) likewise have no display engine and are
+> not GPU-rasterized, though NVENC is available; only the desktop stays on the CPU.
+
 ## 2. Choose an encoder
 
 Set `FASTVM_RECORDING_ENCODER` in `config.env`:
@@ -172,6 +213,10 @@ from the host at runtime.
 
 ## Limitations
 
+- **Compute-only accelerators** (AMD Instinct/CDNA, e.g. MI300X; NVIDIA compute
+  parts) have no graphics engine: no DRI3 rasterization and (for AMD) no VA-API.
+  FastVM detects these (`compute_only` in `gpu.json`) and falls back to CPU
+  rasterization and software encode; ROCm compute still works. See above.
 - DRI3 acceleration covers the **open-source** Intel and AMD drivers. NVIDIA's
   closed driver has no DRI3; on NVIDIA the desktop itself is not GPU-rasterized,
   and GPU access is limited to compute, hardware encode, and application

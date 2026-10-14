@@ -16,6 +16,13 @@ choice="${1:-${FASTVM_RECORDING_ENCODER:-auto}}"
 # Resolve without the environment override so an explicit arg wins.
 vcodec="$(FASTVM_RECORDING_ENCODER="$choice" resolve_encoder)"
 
+# A compute-only accelerator (e.g. AMD Instinct) exposes a render node but no
+# usable VA-API device; fall back to software rather than failing the probe.
+if [[ "$vcodec" == "h264_vaapi" ]] && gpu_is_compute_only; then
+    log_warn "Compute-only GPU: VA-API unavailable; testing software instead"
+    vcodec="libx264"
+fi
+
 tmpdir="$(mktemp -d)"
 trap 'rm -rf "$tmpdir"' EXIT
 out="${tmpdir}/probe.mp4"

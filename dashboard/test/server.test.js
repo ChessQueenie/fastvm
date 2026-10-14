@@ -76,10 +76,25 @@ test('gpu endpoints report detected capabilities', async () => {
     assert.equal(metrics.status, 200);
     assert.equal(metrics.body.detected, true);
     assert.equal(metrics.body.recommended_encoder, 'vaapi');
+    assert.equal(metrics.body.compute_only, false);
 
     const system = await request('GET', '/api/system/status', undefined, 'test-token');
     assert.equal(system.status, 200);
     assert.equal(system.body.gpu.detected, true);
+});
+
+test('gpu endpoints flag compute-only accelerators', async () => {
+    fs.mkdirSync(path.join(dataRoot, '.fastvm'), { recursive: true });
+    fs.writeFileSync(
+        path.join(dataRoot, '.fastvm', 'gpu.json'),
+        JSON.stringify({ detected: true, vendor: 'amd', compute_only: true, has_display: false, recommended_encoder: 'software', encoders: {} }),
+    );
+
+    const metrics = await request('GET', '/api/gpu/metrics', undefined, 'test-token');
+    assert.equal(metrics.status, 200);
+    assert.equal(metrics.body.vendor, 'amd');
+    assert.equal(metrics.body.compute_only, true);
+    assert.equal(metrics.body.recommended_encoder, 'software');
 });
 
 test.after(() => server.close());

@@ -55,6 +55,7 @@ function readGpu() {
     const result = {
         detected: !!caps.detected,
         vendor: caps.vendor || 'none',
+        compute_only: !!caps.compute_only,
         recommended_encoder: caps.recommended_encoder || 'software',
         requested_encoder: process.env.FASTVM_RECORDING_ENCODER || 'auto',
         encoders: caps.encoders || {},

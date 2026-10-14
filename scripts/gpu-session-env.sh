@@ -41,11 +41,25 @@ fastvm_gpu_vendor() {
     esac
 }
 
+# True when the detected GPU is a compute-only accelerator (see gpu-detect.sh).
+fastvm_gpu_compute_only() {
+    local f="${FASTVM_DATA_ROOT:-/config}/.fastvm/gpu.json"
+    [[ -r "$f" ]] || return 1
+    command -v jq >/dev/null 2>&1 || return 1
+    [[ "$(jq -r '.compute_only // false' "$f" 2>/dev/null)" == "true" ]]
+}
+
 fastvm_gpu_apply() {
     [[ "${FASTVM_GPU_HW:-false}" == "true" ]] || return 0
     local node vendor
     node="$(fastvm_gpu_render_node)"
     [[ -n "$node" ]] || return 0
+
+    # Compute-only accelerators (e.g. AMD Instinct / CDNA) have no graphics
+    # engine: there is no DRI3 to unlock and no VA-API to export. Leave the
+    # desktop on llvmpipe and keep the compositor; ROCm compute still works.
+    fastvm_gpu_compute_only && return 0
+
     vendor="$(fastvm_gpu_vendor "$node")"
 
     # Pick the GPU by render node (helps on multi-GPU hosts).

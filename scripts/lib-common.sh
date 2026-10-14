@@ -60,6 +60,15 @@ gpu_recommended_encoder() {
     fi
 }
 
+# True when the last detection found a compute-only accelerator (no graphics
+# engine, e.g. AMD Instinct / CDNA): no DRI3 rasterization and no VA-API.
+gpu_is_compute_only() {
+    local f; f="$(gpu_json_path)"
+    [[ -r "$f" ]] || return 1
+    command -v jq >/dev/null 2>&1 || return 1
+    [[ "$(jq -r '.compute_only // false' "$f" 2>/dev/null)" == "true" ]]
+}
+
 # Resolve FASTVM_RECORDING_ENCODER (auto|nvenc|vaapi|qsv|software) to an ffmpeg
 # encoder name. Explicit choices are honoured as-is; "auto" uses the detection
 # result. Detection runs on demand so this works without container init.

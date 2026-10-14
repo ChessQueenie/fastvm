@@ -120,6 +120,11 @@
             unitEl.textContent = '%';
             setBarFill(barEl, gpu.utilization);
             detailEl.textContent = vendor + ' · ' + fmtBytes(gpu.memory_used) + ' / ' + fmtBytes(gpu.memory_total);
+        } else if (gpu.compute_only) {
+            valueEl.textContent = vendor;
+            unitEl.textContent = '';
+            barEl.style.width = '0%';
+            detailEl.textContent = 'compute-only (no graphics engine) · CPU rasterization';
         } else {
             valueEl.textContent = vendor;
             unitEl.textContent = '';
@@ -347,8 +352,12 @@
         if (summary && gpu) {
             if (gpu.detected) {
                 const enc = gpu.recommended_encoder || 'software';
-                summary.textContent = `${gpu.vendor} GPU · encoder ${enc}` +
-                    (gpu.devices && gpu.devices.length ? ` · ${gpu.devices.length} device(s)` : '');
+                if (gpu.compute_only) {
+                    summary.textContent = `${gpu.vendor} accelerator · compute-only (no graphics engine) · CPU rasterization`;
+                } else {
+                    summary.textContent = `${gpu.vendor} GPU · encoder ${enc}` +
+                        (gpu.devices && gpu.devices.length ? ` · ${gpu.devices.length} device(s)` : '');
+                }
             } else {
                 summary.textContent = 'No GPU detected. Recording falls back to software (libx264).';
             }

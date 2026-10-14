@@ -28,6 +28,14 @@ encoder_choice="${FASTVM_RECORDING_ENCODER:-auto}"
 
 # Hardware encoders emit H.264 only; a container-friendly muxer is required.
 vcodec="$(resolve_encoder)"
+
+# A compute-only accelerator (e.g. AMD Instinct) has no usable VA-API device;
+# record on the CPU rather than failing.
+if [[ "$vcodec" == "h264_vaapi" ]] && gpu_is_compute_only; then
+    log_warn "Compute-only GPU: VA-API unavailable; using software (libx264)"
+    vcodec="libx264"
+fi
+
 if [[ "$vcodec" != "libx264" ]]; then
     case "$format" in
         mp4|mkv) ;;

@@ -45,9 +45,13 @@ detect() {
     local render_node="" card="" vendor="none" detected="false"
     local nvenc="false" vaapi_enc="false" qsv="false"
     local recommended="software" vaapi_driver=""
+    local compute_only="false" has_display="true"
 
     render_node="$(ls /dev/dri/renderD* 2>/dev/null | head -n1 || true)"
     card="$(ls /dev/dri/card* 2>/dev/null | head -n1 || true)"
+    # Test hooks (no GPU needed in CI): force the classification inputs.
+    [[ -n "${FASTVM_GPU_FORCE_RENDER_NODE:-}" ]] && render_node="${FASTVM_GPU_FORCE_RENDER_NODE}"
+    [[ -n "${FASTVM_GPU_FORCE_CARD:-}" ]] && card="${FASTVM_GPU_FORCE_CARD}"
 
     if detect_nvidia; then
         vendor="nvidia"
@@ -64,14 +68,23 @@ detect() {
         elif [[ "$vendor" == "none" ]]; then
             vendor="unknown"
         fi
+        [[ -n "${FASTVM_GPU_FORCE_VENDOR:-}" ]] && vendor="${FASTVM_GPU_FORCE_VENDOR}"
+        # A KMS "card" node means the device can drive a display/3D pipeline. AMD
+        # CDNA/Instinct accelerators (MI2xx/MI3xx) expose only a render node, so
+        # they can do compute but have no graphics engine: no DRI3 rasterization,
+        # and their video blocks are reachable through ROCm (rocDecode), not VA-API.
+        [[ -n "$card" ]] && has_display="true" || has_display="false"
+        if [[ "$has_display" == "false" && "$vendor" == "amd" ]]; then
+            compute_only="true"
+        fi
         # QSV is Intel-only and needs the media driver.
         if [[ "$vendor" == "intel" ]] && ffmpeg_has_encoder h264_qsv; then
             qsv="true"
         fi
-        if ffmpeg_has_encoder h264_vaapi; then
+        if [[ "$compute_only" != "true" ]] && ffmpeg_has_encoder h264_vaapi; then
             vaapi_enc="true"
         fi
-        if command -v vainfo >/dev/null 2>&1; then
+        if [[ "$compute_only" != "true" ]] && command -v vainfo >/dev/null 2>&1; then
             vaapi_driver="$(vainfo --display drm --device "$render_node" 2>/dev/null \
                 | awk -F': ' '/vainfo: Driver version/ {print $2; exit}' || true)"
         fi
@@ -94,6 +107,8 @@ detect() {
   "vendor": "${vendor}",
   "render_node": "${render_node}",
   "card": "${card}",
+  "has_display": ${has_display},
+  "compute_only": ${compute_only},
   "nvidia": {
     "present": $([[ "$vendor" == "nvidia" ]] && echo true || echo false),
     "driver_version": "${driver_version}"
@@ -113,7 +128,10 @@ detect() {
 JSON
     chmod 0644 "$OUT" 2>/dev/null || true
 
-    if [[ "$detected" == "true" ]]; then
+    if [[ "$compute_only" == "true" ]]; then
+        log_warn "Compute-only GPU detected (vendor=${vendor}); no graphics engine — desktop uses CPU (llvmpipe) rasterization"
+        log_info "Set DISABLE_DRI=1 and FASTVM_GPU_HW=false for a clean session; ROCm compute still works"
+    elif [[ "$detected" == "true" ]]; then
         log_success "GPU detected: vendor=${vendor} encoder=${recommended}"
     else
         log_info "No GPU detected; using software encoding"

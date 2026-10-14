@@ -41,6 +41,7 @@ Key settings:
 - `FASTVM_GPU` — compose overlay selection for `./fastvm-install.sh`: `false` (default), `true|intel|amd`, or `nvidia`
 - `FASTVM_GPU_HW` — opt in to a GPU-rasterized desktop session (KasmVNC DRI3 + `scripts/gpu-session-env.sh`); disables the compositor on XFCE/KDE/MATE
 - `FASTVM_GPU_KEEP_COMPOSITING` — keep desktop compositing even with GPU rasterization (forces CPU/llvmpipe rendering)
+- `DISABLE_DRI` — set to `1` to stop KasmVNC from enabling DRI3 (use on compute-only accelerators like AMD Instinct MI300X); FastVM auto-detects these via `compute_only` in `gpu.json`
 - `DRINODE` — DRM render node for multi-GPU hosts (default `/dev/dri/renderD128`)
 
 ## Architecture

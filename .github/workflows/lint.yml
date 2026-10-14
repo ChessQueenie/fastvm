@@ -73,3 +73,23 @@ jobs:
           grep -q 'FASTVM_RECORDING_ENCODER' scripts/validate-config.sh
           grep -q 'FASTVM_GPU_HW' scripts/validate-config.sh
           grep -q 'docker-compose.gpu.yml' docs/gpu.md
+      - name: Compute-only GPU detection (fixture)
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          export FASTVM_DATA_ROOT="$tmp"
+          mkdir -p "$tmp/.fastvm" "$tmp/dev/dri"
+          : > "$tmp/dev/dri/renderD128"
+          # AMD render node with no KMS card node => compute-only accelerator.
+          FASTVM_GPU_FORCE_RENDER_NODE="$tmp/dev/dri/renderD128" \
+            FASTVM_GPU_FORCE_VENDOR=amd \
+            bash scripts/gpu-detect.sh detect
+          bash scripts/gpu-detect.sh show | grep -q '"compute_only": true'
+          bash scripts/gpu-detect.sh show | grep -q '"recommended_encoder": "software"'
+          # With a KMS card node present it is a graphics GPU: not compute-only.
+          : > "$tmp/dev/dri/card0"
+          FASTVM_GPU_FORCE_RENDER_NODE="$tmp/dev/dri/renderD128" \
+            FASTVM_GPU_FORCE_CARD="$tmp/dev/dri/card0" \
+            FASTVM_GPU_FORCE_VENDOR=amd \
+            bash scripts/gpu-detect.sh detect
+          bash scripts/gpu-detect.sh show | grep -q '"compute_only": false'
